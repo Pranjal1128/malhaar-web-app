@@ -1,0 +1,8 @@
+{
+  "name": "MALHAAR ( The Musical World )",
+  "description": "A college music club management web application featuring interactive dashboards, schedules, member performance tracking, suggestions, and core controls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

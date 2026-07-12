@@ -1,0 +1,27 @@
+{
+  "entities": {
+    "MalhaarBackup": {
+      "title": "Malhaar Backup",
+      "description": "Consolidated state backup for the Malhaar Music Society application.",
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the backup was created."
+        },
+        "json_data": {
+          "type": "string",
+          "description": "Serialized JSON string representing the full database state."
+        }
+      },
+      "required": ["timestamp", "json_data"]
+    }
+  },
+  "firestore": {
+    "/malhaar_backup/{backupId}": {
+      "schema": "MalhaarBackup",
+      "description": "Contains cloud backups of the application's global database."
+    }
+  }
+}

@@ -1,0 +1,229 @@
+      case 'timetable':
+        return (
+          <div className="space-y-6 animate-fade-in pb-16 w-full max-w-7xl mx-auto px-4 text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
+              <div>
+                <h1 className="text-3xl font-serif text-[#ECE6E1]">Rehearsal & Practice <span className="text-[#D98353]">Schedules</span></h1>
+                <p className="text-xs text-[#AC9E94]">
+                  Browse dynamic training calendars, sync with your Google Calendar, and manage rehearsal routines.
+                </p>
+              </div>
+
+              {/* Filter Dropdown */}
+              <div className="flex items-center gap-3">
+                <select
+                  value={timetableFilter}
+                  onChange={(e) => setTimetableFilter(e.target.value)}
+                  className="px-4 py-2 bg-black/40 border border-white/10 text-xs text-[#ECE6E1] rounded-xl focus:border-[#D98353] outline-none transition-all cursor-pointer font-mono"
+                >
+                  <option value="All">All Practice Categories</option>
+                  <option value="Practice">Practice Session</option>
+                  <option value="Workshop">Synths Workshop</option>
+                  <option value="Lobby Jam">Open Lobby Jam</option>
+                  <option value="Core Meet">Core Review Meets</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Google Calendar Link Card */}
+            {['admin', 'president', 'core'].includes(currentUser.role) && (
+              <div className="bg-gradient-to-r from-[#1C120F] via-stone-900 to-black border border-white/10 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="space-y-1.5 max-w-xl text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🌐</span>
+                    <h4 className="font-serif text-lg font-bold text-[#ECE6E1]">Google Calendar Integration Workspace</h4>
+                  </div>
+                  <p className="text-xs text-[#AC9E94] leading-relaxed">
+                    Connect your Google Workspace Account to synchronize practice slots, view upcoming events directly inside your campus dashboard, and automatically schedule Google Meet links for online reviews.
+                  </p>
+                  {getWorkspaceToken() && (
+                    <div className="text-xs text-emerald-400 font-mono font-bold flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      Sync Mode Enabled: Calendar events are fetching live!
+                    </div>
+                  )}
+                </div>
+
+                <div className="shrink-0">
+                  {getWorkspaceToken() ? (
+                    <button
+                      onClick={() => {
+                        disconnectGoogleWorkspace();
+                        setGoogleEvents([]);
+                        triggerToast("Google Workspace disconnected successfully.", "info");
+                      }}
+                      className="px-5 py-2 bg-rose-950/40 text-rose-400 hover:bg-rose-900 hover:text-white font-mono text-xs font-bold uppercase rounded-xl transition-all border border-rose-900/40 cursor-pointer"
+                    >
+                      🔌 Disconnect Google Account
+                    </button>
+                  ) : (
+                    <button
+                      onClick={async () => {
+                        try {
+                          triggerToast("Opening Google Account portal...", "info");
+                          const res = await connectGoogleWorkspace();
+                          if (res) {
+                            triggerToast("Successfully connected to Google Calendar!", "success");
+                            fetchGoogleCalendarEvents();
+                          }
+                        } catch (err: any) {
+                          console.error("Workspace Auth Error:", err);
+                          triggerToast(`Connection failed: ${err.message}`, "error");
+                        }
+                      }}
+                      className="gsi-material-button font-mono text-xs font-black"
+                      style={{
+                        backgroundColor: 'white',
+                        color: '#1f1f1f',
+                        padding: '10px 16px',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        border: '1px solid #dadce0',
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style={{ display: 'block', width: '18px', height: '18px' }}>
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                      </svg>
+                      <span>Connect Google Calendar</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+        );
+
+      case 'attendance':
+        return (
+          <div className="space-y-6 animate-fade-in pb-16 w-full max-w-7xl mx-auto px-4 text-left">
+            <div className="border-b border-white/5 pb-4">
+              <h1 className="text-3xl font-serif text-[#ECE6E1]">Society <span className="text-[#D98353]">Attendance Board</span></h1>
+              <p className="text-xs text-[#AC9E94]">
+                Register, track, and audit rehearsal participations, training sessions, and general workshops.
+              </p>
+            </div>
+
+            {/* Attendance Roster Board Tabs */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* LEFT COLUMN: Personal Performance & Metrics Dashboard (Visible to everyone) */}
+              <div className="lg:col-span-1 space-y-6">
+                <div className="bg-gradient-to-b from-[#1E1411] to-[#0D0A09] border border-[#D98353]/30 rounded-3xl p-6 shadow-xl space-y-6">
+                  <div className="text-left">
+                    <span className="text-[10px] font-mono text-[#D98353] uppercase tracking-widest font-bold">Your Status Card</span>
+                    <h3 className="text-xl font-serif font-bold text-white mt-0.5">My Rehearsal Score</h3>
+                  </div>
+
+                  {/* Dynamic Metrics */}
+                  {(() => {
+                    const myScheduledSessions = allSessions.filter(s => {
+                      const slotId = s.description;
+                      const slot = timetable.find(t => t.id === slotId);
+                      if (!slot) return true;
+                      if (slot.assigned_to === 'All' || !slot.assigned_to) return true;
+                      const list = slot.assigned_to.toLowerCase().split(',').map(n => n.trim());
+                      return list.includes(currentUser.name.toLowerCase()) || 
+                             list.includes(currentUser.id.toLowerCase());
+                    });
+
+                    const myRecords = allAttendanceRecords.filter(r => r.user_id === currentUser.id && myScheduledSessions.some(s => s.id === r.session_id));
+                    const attendedCount = myRecords.filter(r => r.status === 'present').length;
+                    const totalScheduled = myScheduledSessions.length;
+                    const rate = totalScheduled > 0 ? Math.round((attendedCount / totalScheduled) * 100) : 100;
+                    
+                    let grade = 'A+';
+                    if (rate < 60) grade = 'F';
+                    else if (rate < 70) grade = 'D';
+                    else if (rate < 80) grade = 'C';
+                    else if (rate < 90) grade = 'B';
+                    else if (rate < 95) grade = 'A';
+
+                    return (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between bg-black/40 p-4 border border-white/5 rounded-2xl">
+                          <div className="space-y-1">
+                            <span className="text-[10px] uppercase font-mono text-stone-400 font-bold">Attendance Grade</span>
+                            <h4 className="text-4xl font-serif font-black text-[#D98353]">{grade}</h4>
+                          </div>
+                          <div className="text-right space-y-1">
+                            <span className="text-[10px] uppercase font-mono text-stone-400 font-bold">Success Rate</span>
+                            <h4 className="text-4xl font-mono font-black text-emerald-400">{rate}%</h4>
+                          </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-[10px] font-mono text-stone-400 font-bold uppercase">
+                            <span>Training Progress Meter</span>
+                            <span>{attendedCount} / {totalScheduled} Rehearsals</span>
+                          </div>
+                          <div className="w-full h-2 bg-stone-900 rounded-full overflow-hidden border border-white/5">
+                            <div 
+                              className={`h-full rounded-full transition-all duration-1000 ${
+                                rate >= 85 ? 'bg-gradient-to-r from-emerald-500 to-green-400' :
+                                rate >= 75 ? 'bg-gradient-to-r from-amber-500 to-orange-400' :
+                                'bg-gradient-to-r from-rose-500 to-red-400'
+                              }`}
+                              style={{ width: `${rate}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Detail Stats */}
+                        <div className="grid grid-cols-2 gap-3 pt-2">
+                          <div className="bg-white/[0.01] border border-white/5 p-3 rounded-xl">
+                            <span className="text-[9px] font-mono text-stone-400 uppercase font-bold block">Attended</span>
+                            <span className="text-lg font-mono font-bold text-emerald-400">{attendedCount} sessions</span>
+                          </div>
+                          <div className="bg-white/[0.01] border border-white/5 p-3 rounded-xl">
+                            <span className="text-[9px] font-mono text-stone-400 uppercase font-bold block">Excused leaves</span>
+                            <span className="text-lg font-mono font-bold text-amber-400">
+                              {myRecords.filter(r => r.status === 'absent' && r.excuse).length} absences
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Personal History list inside Status card */}
+                        <div className="space-y-2.5 pt-4 border-t border-white/5 text-left">
+                          <h5 className="text-[10px] font-mono uppercase font-bold text-[#D98353] tracking-widest">My Training Logs</h5>
+                          <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            {myScheduledSessions.length === 0 ? (
+                              <p className="text-[10px] font-mono text-stone-500 italic">No scheduled training logs registered yet.</p>
+                            ) : (
+                              myScheduledSessions.map(s => {
+                                const rec = myRecords.find(r => r.session_id === s.id);
+                                const isPresent = rec ? rec.status === 'present' : false;
+                                return (
+                                  <div key={s.id} className="flex items-center justify-between p-2 rounded-lg bg-black/20 border border-white/5 text-xs">
+                                    <div className="truncate max-w-[150px]">
+                                      <p className="font-semibold text-stone-300 truncate">{s.title}</p>
+                                      <p className="text-[9px] font-mono text-stone-400">{s.date}</p>
+                                    </div>
+                                    <span className={`px-2 py-0.5 rounded-full text-[9px] uppercase font-bold font-mono ${
+                                      isPresent ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/40' : 'bg-rose-950/40 text-rose-400 border border-rose-900/40'
+                                    }`}>
+                                      {isPresent ? '✅ Present' : '❌ Absent'}
+                                    </span>
+                                  </div>
+                                );
+                              })
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* RIGHT / MAIN COLUMN: Log, mark and review system-wide sessions (Admin/President role manages) */}
+              <div className="lg:col-span-2 space-y-6">
+                

@@ -1,0 +1,19 @@
+--- src/components/AdminView.tsx
++++ src/components/AdminView.tsx
+@@ -335,6 +335,8 @@
+       name: 'All Custom Society Data',
+-      extraAction: () => exe  const handleExportToExcel = () => {
++      extraAction: () => executeResetDiagnosticDb()
++    });
++  };
++
++  const handleExportToExcel = () => {
+     try {
+       const headers = [
+@@ -419,6 +421,2 @@
+       onRequestToast("Failed to generate Excel export: " + error.message, "error");
+     }
+-  }; + error.message, "error");
+-    }
+-  };
+-

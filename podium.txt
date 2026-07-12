@@ -1,0 +1,121 @@
+            <div className="border-b border-[#D98353]/20 pb-4 text-left flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h1 className="text-3xl font-serif text-white font-bold tracking-tight">Society Standing Leaderboard</h1>
+                <p className="text-xs text-stone-400">View real-time student rankings calculated by attendance, mandates, and weekly tasks.</p>
+              </div>
+              <div className="flex gap-2">
+                <span className="px-3 py-1 bg-black/60 border border-[#D98353]/30 rounded-full text-xs font-mono text-[#D98353] font-bold shadow-[0_0_15px_rgba(217,131,83,0.15)]">
+                  🏆 {leaderboardUsers.length} Performers Active
+                </span>
+              </div>
+            </div>
+
+            {/* ====== THE TOP 3 PODIUM SECTION ====== */}
+            <div className="grid grid-cols-3 gap-3 sm:gap-6 items-end pt-8 pb-4 max-w-2xl mx-auto">
+              
+              {/* 2nd Place: Left column */}
+              {leaderboardUsers[1] ? (
+                <div className="flex flex-col items-center text-center animate-slide-up" style={{ animationDelay: '100ms' }}>
+                  {/* User Avatar with rank badge */}
+                  <div className="relative shrink-0 mb-2">
+                    <div className="absolute -top-1.5 -right-1.5 bg-[#D98353]/80 text-black w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold border-2 border-[#D98353] shadow-md">
+                      🥈
+                    </div>
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-[#D98353]/60 overflow-hidden bg-neutral-900 shadow-[0_0_15px_rgba(217,131,83,0.25)]">
+                      {leaderboardUsers[1].profile.profile_image_url ? (
+                        <img src={leaderboardUsers[1].profile.profile_image_url} alt={leaderboardUsers[1].profile.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-lg font-serif font-black text-[#D98353]">
+                          {leaderboardUsers[1].profile.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <span className="font-bold text-xs sm:text-sm text-white line-clamp-1 max-w-[90px]">{leaderboardUsers[1].profile.name}</span>
+                  <span className="text-[10px] font-mono text-[#D98353] font-bold">{leaderboardUsers[1].profile.role === 'president' ? 'NA' : leaderboardUsers[1].perf.total_points} pts</span>
+                  
+                  {/* Podium vertical bar */}
+                  <div className="w-full h-24 sm:h-28 bg-gradient-to-t from-black via-[#140C08] to-[#1F120B] border border-[#D98353]/20 rounded-t-2xl mt-3 flex flex-col items-center justify-center shadow-lg shadow-black/80">
+                    <span className="text-[#D98353]/85 font-serif font-black text-3xl sm:text-4xl drop-shadow-[0_0_8px_rgba(217,131,83,0.3)]">2</span>
+                    <span className="text-[8px] font-mono uppercase tracking-widest text-[#D98353]/80 font-bold">Silver</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-10"></div>
+              )}
+
+              {/* 1st Place: Center column (Highest bar with crown) */}
+              {leaderboardUsers[0] ? (
+                <div className="flex flex-col items-center text-center animate-slide-up" style={{ animationDelay: '0ms' }}>
+                  {/* Floating Gold Crown */}
+                  <span className="text-2xl animate-bounce mb-1">👑</span>
+                  
+                  {/* User Avatar with rank badge */}
+                  <div className="relative shrink-0 mb-2">
+                    <div className="absolute -top-1.5 -right-1.5 bg-[#D98353] text-black w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold border-2 border-[#D98353] shadow-md">
+                      🥇
+                    </div>
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-[#D98353] overflow-hidden bg-neutral-900 shadow-[0_0_25px_rgba(217,131,83,0.5)] relative">
+                      {leaderboardUsers[0].profile.profile_image_url ? (
+                        <img src={leaderboardUsers[0].profile.profile_image_url} alt={leaderboardUsers[0].profile.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-xl font-serif font-black text-[#D98353]">
+                          {leaderboardUsers[0].profile.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <span className="font-extrabold text-xs sm:text-base text-white line-clamp-1 max-w-[100px]">{leaderboardUsers[0].profile.name}</span>
+                  <span className="text-xs font-mono text-[#D98353] font-extrabold drop-shadow-[0_0_4px_rgba(217,131,83,0.2)]">{leaderboardUsers[0].profile.role === 'president' ? 'NA' : leaderboardUsers[0].perf.total_points} pts</span>
+                  
+                  {/* Podium vertical bar */}
+                  <div className="w-full h-32 sm:h-36 bg-gradient-to-t from-black via-[#1C100A] to-[#2B180F] border border-[#D98353]/35 rounded-t-2xl mt-3 flex flex-col items-center justify-center shadow-xl shadow-black/90">
+                    <span className="text-[#D98353] font-serif font-black text-4xl sm:text-5xl drop-shadow-[0_0_12px_rgba(217,131,83,0.5)]">1</span>
+                    <span className="text-[8px] font-mono uppercase tracking-widest text-[#D98353] font-bold">Winner</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-10"></div>
+              )}
+
+              {/* 3rd Place: Right column */}
+              {leaderboardUsers[2] ? (
+                <div className="flex flex-col items-center text-center animate-slide-up" style={{ animationDelay: '200ms' }}>
+                  {/* User Avatar with rank badge */}
+                  <div className="relative shrink-0 mb-2">
+                    <div className="absolute -top-1.5 -right-1.5 bg-[#CD7F32] text-black w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold border-2 border-[#CD7F32] shadow-md">
+                      🥉
+                    </div>
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-4 border-[#CD7F32] overflow-hidden bg-neutral-900 shadow-[0_0_15px_rgba(205,127,50,0.25)]">
+                      {leaderboardUsers[2].profile.profile_image_url ? (
+                        <img src={leaderboardUsers[2].profile.profile_image_url} alt={leaderboardUsers[2].profile.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-neutral-850 flex items-center justify-center text-md font-serif font-black text-[#CD7F32]">
+                          {leaderboardUsers[2].profile.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <span className="font-bold text-xs sm:text-sm text-white line-clamp-1 max-w-[90px]">{leaderboardUsers[2].profile.name}</span>
+                  <span className="text-[10px] font-mono text-[#D98353] font-bold">{leaderboardUsers[2].profile.role === 'president' ? 'NA' : leaderboardUsers[2].perf.total_points} pts</span>
+                  
+                  {/* Podium vertical bar */}
+                  <div className="w-full h-18 sm:h-22 bg-gradient-to-t from-black via-[#0F0A06] to-[#1A120B] border border-[#D98353]/15 rounded-t-2xl mt-3 flex flex-col items-center justify-center shadow-md shadow-black/80">
+                    <span className="text-[#D98353]/85 font-serif font-black text-2xl sm:text-3xl drop-shadow-[0_0_6px_rgba(217,131,83,0.2)]">3</span>
+                    <span className="text-[8px] font-mono uppercase tracking-widest text-[#D98353]/80 font-bold">Bronze</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-10"></div>
+              )}
+
+            </div>
+
+            {/* ====== HIGHLIGHTED ACTIVE LOGGED-IN USER STANDING CARD ====== */}
+            {!isCabinet && (
+              <div className="bg-gradient-to-r from-[#D98353] to-[#803816] text-white rounded-3xl p-5 shadow-[0_0_25px_rgba(217,131,83,0.25)] flex items-center justify-between text-left relative overflow-hidden border border-[#D98353]/35 animate-pulse">
+                {/* Visual accents */}
+                <div className="absolute -right-8 -bottom-8 w-24 h-24 rounded-full bg-white/10 blur-xl pointer-events-none" />
+                <div className="absolute -left-8 -top-8 w-24 h-24 rounded-full bg-white/10 blur-xl pointer-events-none" />
+                
+                <div className="flex items-center gap-4 relative z-10">

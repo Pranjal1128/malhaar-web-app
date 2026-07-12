@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net: default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // System backup collection: allowed for server REST backup and restore operations.
+    match /malhaar_backup/{backupId} {
+      allow read, write: if backupId == 'all_data';
+    }
+
+    // Public read for test connection checks
+    match /test/{documentId} {
+      allow read: if true;
+    }
+  }
+}
