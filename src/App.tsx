@@ -53,7 +53,14 @@ import {
   Trash2,
   Check,
   Clock,
-  ArrowRight
+  ArrowRight,
+  LayoutDashboard,
+  Mic2,
+  Medal,
+  ScrollText,
+  Target,
+  Megaphone,
+  Sparkles
 } from 'lucide-react';
 
 const getWeekdayOfEntry = (dayOrDate: string): string => {
@@ -2800,18 +2807,18 @@ export default function App() {
   }
 
   const rawNavItems = [
-    { id: 'dashboard', label: '🎼 Dashboard', icon: '𝄞' },
-    { id: 'music-lab', label: '🎶 Swar, Taal, Vocal and Harmonies', icon: '🎶' },
-    { id: 'leaderboard', label: '🏆 Leaderboard', icon: '🏅' },
-    { id: 'core-team', label: '👥 Core Team', icon: '🎖' },
-    { id: 'timetable', label: '📅 Schedules', icon: '⏱' },
-    { id: 'attendance', label: '📋 Attendance Board', icon: '📋' },
-    { id: 'rules', label: '📜 Rules & Regs', icon: '📜' },
-    { id: 'targets', label: '🎯 Monthly Targets', icon: '📌' },
-    { id: 'notices', label: '📢 Notices Feed', icon: '📢' },
-    { id: 'suggestions', label: '💬 Suggestion Box', icon: '📬' },
-    { id: 'alumni-connect', label: '✨ Alumni Connect', icon: '💬' },
-    { id: 'profile', label: '👤 My Profile', icon: '👤' },
+    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+    { id: 'music-lab', label: 'Swar, Taal, Vocal and Harmonies', icon: <Mic2 size={18} /> },
+    { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={18} /> },
+    { id: 'core-team', label: 'Core Team', icon: <Users size={18} /> },
+    { id: 'timetable', label: 'Schedules', icon: <Calendar size={18} /> },
+    { id: 'attendance', label: 'Attendance Board', icon: <ClipboardCheck size={18} /> },
+    { id: 'rules', label: 'Rules & Regs', icon: <ScrollText size={18} /> },
+    { id: 'targets', label: 'Monthly Targets', icon: <Target size={18} /> },
+    { id: 'notices', label: 'Notices Feed', icon: <Megaphone size={18} /> },
+    { id: 'suggestions', label: 'Suggestion Box', icon: <MessageSquare size={18} /> },
+    { id: 'alumni-connect', label: 'Alumni Connect', icon: <Sparkles size={18} /> },
+    { id: 'profile', label: 'My Profile', icon: <User size={18} /> },
   ];
 
   // Filter based on roles. Alumni can ONLY see Home, Swar Lab, Profile, Dashboard, Core Team, Alumni Chat.
@@ -2830,8 +2837,8 @@ export default function App() {
 
   // Extra restricted spaces
   const extraNavItems = [
-    { id: 'core-control', label: '🔒 Core Control Hall', icon: '🔒', roles: ['president', 'central_core'] },
-    { id: 'admin', label: '⚙ Admin Panel', icon: '⚙', roles: ['admin', 'president', 'central_core', 'core'] }
+    { id: 'core-control', label: 'Core Control Hall', icon: <Lock size={18} />, roles: ['president', 'central_core'] },
+    { id: 'admin', label: 'Admin Panel', icon: <Settings size={18} />, roles: ['admin', 'president', 'central_core', 'core'] }
   ];
 
   const visibleExtraItems = (!currentUser || currentUser.role === 'alumni')
@@ -3020,8 +3027,8 @@ export default function App() {
                   }}
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-all pointer-events-auto cursor-pointer ${
                     activeView === item.id 
-                      ? 'bg-gradient-to-r from-[#D98353] to-[#B35F30] text-black shadow-[0_0_15px_rgba(217,131,83,0.25)]' 
-                      : 'text-[#AC9E94] hover:text-[#ECE6E1] hover:bg-white/5'
+                      ? 'bg-gradient-to-r from-[#D98353] to-[#B35F30] text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_20px_rgba(217,131,83,0.4)]' 
+                      : 'text-[#AC9E94] hover:text-[#ECE6E1] hover:bg-white/5 hover:translate-x-1'
                   }`}
                 >
                   <span className="text-sm">{item.icon}</span>
@@ -3041,8 +3048,8 @@ export default function App() {
                       }}
                       className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-all pointer-events-auto cursor-pointer ${
                         activeView === item.id 
-                          ? 'bg-gradient-to-r from-[#E6AF2E] to-[#B8860B] text-black shadow-[0_0_15px_rgba(230,175,46,0.25)]' 
-                          : 'text-[#AC9E94] hover:text-[#ECE6E1] hover:bg-white/5'
+                          ? 'bg-gradient-to-r from-[#E6AF2E] to-[#B8860B] text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_20px_rgba(230,175,46,0.4)]' 
+                          : 'text-[#AC9E94] hover:text-[#ECE6E1] hover:bg-white/5 hover:translate-x-1'
                       }`}
                     >
                       <span className="text-sm">{item.icon}</span>
@@ -3348,28 +3355,28 @@ export default function App() {
                 onClick={() => setActiveView('leaderboard')}
                 className={`flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${activeView === 'leaderboard' ? 'text-[#D98353]' : 'text-stone-400'}`}
               >
-                <span className="text-base leading-none">🏆</span>
+                <Trophy size={18} />
                 <span>Leader</span>
               </button>
               <button 
                 onClick={() => setActiveView('timetable')}
                 className={`flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${activeView === 'timetable' ? 'text-[#D98353]' : 'text-stone-400'}`}
               >
-                <span className="text-base leading-none">📅</span>
+                <Calendar size={18} />
                 <span>Timetable</span>
               </button>
               <button 
                 onClick={() => setActiveView('music-lab')}
                 className={`flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${activeView === 'music-lab' ? 'text-[#D98353]' : 'text-stone-400'}`}
               >
-                <span className="text-base leading-none">🎶</span>
+                <Mic2 size={18} />
                 <span>Svara Lab</span>
               </button>
               <button 
                 onClick={() => setActiveView('profile')}
                 className={`flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${activeView === 'profile' ? 'text-[#D98353]' : 'text-stone-400'}`}
               >
-                <span className="text-base leading-none">👤</span>
+                <User size={18} />
                 <span>Profile</span>
               </button>
             </>
@@ -3378,7 +3385,7 @@ export default function App() {
               onClick={() => setIsAuthOpen(true)}
               className="flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider text-[#D98353]"
             >
-              <span className="text-base leading-none">🔑</span>
+              <Lock size={18} />
               <span>Sign In</span>
             </button>
           )}

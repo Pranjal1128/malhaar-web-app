@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   Cell
 } from 'recharts';
+import { Crown, Star, Medal, GraduationCap, Music, Edit3, Lock, ArrowRight, Mic2, Sparkles, CreditCard, Check, X, Clock } from 'lucide-react';
 
 interface ProfileViewProps {
   currentUser: Profile;
@@ -209,15 +210,14 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
                     profile.role === 'alumni' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.1)]' :
                     'bg-zinc-900/90 text-zinc-300 border-zinc-800'
                   }`}>
-                    {profile.role === 'president' ? '👑 President Cabinet' :
-                     profile.role === 'central_core' ? '⭐ Central Core of Society' :
-                     profile.role === 'core' ? '🎖️ Core Member' :
-                     profile.role === 'alumni' ? '🎓 Alumni Advisor' :
-                     '🎵 Student Member'}
+                    {profile.role === 'president' ? <span className="flex items-center gap-1.5"><Crown size={10} /> President Cabinet</span> :
+                     profile.role === 'central_core' ? <span className="flex items-center gap-1.5"><Star size={10} /> Central Core of Society</span> :
+                     profile.role === 'core' ? <span className="flex items-center gap-1.5"><Medal size={10} /> Core Member</span> :
+                     profile.role === 'alumni' ? <span className="flex items-center gap-1.5"><GraduationCap size={10} /> Alumni Advisor</span> :
+                     <span className="flex items-center gap-1.5"><Music size={10} /> Student Member</span>}
                   </span>
                 </div>
 
-                {/* Subtitle fields: Speciality, Year, Course */}
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1 text-xs text-stone-400 font-medium">
                   <span className="font-semibold text-[#D98353] drop-shadow-[0_0_4px_rgba(217,131,83,0.2)]">{profile.domain} division</span>
                   <span className="text-zinc-700">•</span>
@@ -230,14 +230,12 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
                   )}
                 </div>
 
-                {/* Bio snippet in beautiful glossy card */}
                 {profile.bio && (
                   <p className="text-xs text-stone-300 bg-white/5 border border-white/10 px-3.5 py-2 rounded-xl mt-1 leading-relaxed max-w-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)]">
                     {profile.bio}
                   </p>
                 )}
                 
-                {/* Stats indicators with neon glowing accents */}
                 <div className="flex items-center justify-center sm:justify-start gap-5 pt-1 text-stone-300">
                   <div className="text-left">
                     <span className="block text-xl font-extrabold text-[#D98353] leading-none drop-shadow-[0_0_6px_rgba(217,131,83,0.3)]">
@@ -265,14 +263,13 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
               </div>
             </div>
 
-            {/* Right: Quick actions */}
             <div className="flex flex-col gap-2 shrink-0 w-full sm:w-auto">
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className="w-full sm:w-auto px-4 py-2 bg-[#D98353]/10 hover:bg-[#D98353]/20 text-[#ECE6E1] hover:text-[#D98353] text-xs font-bold rounded-xl border border-[#D98353]/30 transition-all cursor-pointer text-center"
+                className="w-full sm:w-auto px-4 py-2 bg-[#D98353]/10 hover:bg-[#D98353]/20 text-[#ECE6E1] hover:text-[#D98353] text-xs font-bold rounded-xl border border-[#D98353]/30 transition-all cursor-pointer text-center flex items-center justify-center gap-2 active:scale-95 hover:shadow-lg"
                 id="edit-profile-toggle"
               >
-                {isEditing ? 'Cancel Edit' : '✐ Edit Details'}
+                {isEditing ? 'Cancel Edit' : <><Edit3 size={14} /> Edit Details</>}
               </button>
               
               <div className="text-center sm:text-right">
@@ -281,24 +278,22 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
             </div>
           </div>
 
-          {/* Core Control Hall Access Widget for President / Central Core */}
           {(profile.role === 'president' || profile.role === 'central_core') && (
             <div className="bg-gradient-to-r from-stone-900 to-[#1C120F] border border-[#D98353]/30 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-[0_0_15px_rgba(217,131,83,0.08)]">
               <div className="text-left space-y-1">
                 <span className="text-[9px] font-mono text-[#D98353] font-bold uppercase tracking-widest block">Executive Board Privilege</span>
-                <h4 className="text-sm font-serif font-black text-white">🔒 Core Control Hall Connected</h4>
+                <h4 className="text-sm font-serif font-black text-white flex items-center gap-2"><Lock size={14} /> Core Control Hall Connected</h4>
                 <p className="text-[10px] text-stone-400">Manage tasks, assign projects, and analyze real-time efficiency metrics of core board members.</p>
               </div>
               <button
                 onClick={() => onNavigateToView?.('core-control')}
-                className="px-4 py-2 bg-gradient-to-r from-[#D98353] to-[#B35F30] hover:shadow-[0_0_15px_rgba(217,131,83,0.3)] text-black text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-all shrink-0 font-mono"
+                className="px-4 py-2 bg-gradient-to-r from-[#D98353] to-[#B35F30] hover:shadow-[0_0_15px_rgba(217,131,83,0.3)] text-black text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-all shrink-0 font-mono flex items-center justify-center gap-2 active:scale-95"
               >
-                Enter Control Hall ➔
+                Enter Control Hall <ArrowRight size={14} />
               </button>
             </div>
           )}
 
-          {/* ====== BIO EDITING FORM (Dark Mode variant) ====== */}
           {isEditing && (
             <div className="bg-[#120F0E] border border-[#D98353]/20 rounded-2xl p-5 shadow-inner space-y-4 text-left animate-slide-down">
               <h2 className="text-md font-bold text-[#D98353] border-b border-zinc-800 pb-2 font-serif">Modify Display Profile</h2>
@@ -376,7 +371,6 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
 
           {profile.role === 'member' && (
             <>
-              {/* ====== STATISTICS SECTION ====== */}
               <div className="space-y-3 text-left">
                 <div className="flex justify-between items-center">
                   <h2 className="text-lg font-bold text-white font-serif tracking-tight">Society Evaluation Points</h2>
@@ -388,10 +382,8 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
                   </button>
                 </div>
 
-                {/* Statistics Card matching Dark theme with Recharts */}
                 <div className="bg-black/50 border border-[#D98353]/15 rounded-3xl p-5 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)]">
                   
-                  {/* Left Column: Specific metrics in neon styling */}
                   <div className="space-y-4 w-full md:w-1/3 text-left">
                     <div className="space-y-0.5">
                       <span className="text-[11px] text-zinc-500 font-mono font-medium block uppercase tracking-wider">Attendance Points</span>
@@ -415,7 +407,6 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
                     </div>
                   </div>
 
-                  {/* Right Column: Recharts bar chart */}
                   <div className="w-full md:w-2/3 h-44 relative">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
@@ -454,19 +445,17 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
                           }}
                         />
                         <Bar dataKey="points" barSize={40} radius={[8, 8, 0, 0]}>
-                          <Cell fill="#D98353" /> {/* Attendance: Terracotta */}
-                          <Cell fill="#EA580C" /> {/* Tasks: Neon Orange */}
-                          <Cell fill="#F59E0B" /> {/* Achievement: Rich Amber */}
-                          <Cell fill="#F97316" /> {/* Contribution: High Orange */}
+                          <Cell fill="#D98353" />
+                          <Cell fill="#EA580C" />
+                          <Cell fill="#F59E0B" />
+                          <Cell fill="#F97316" />
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
-
                 </div>
               </div>
 
-              {/* ====== TRAININGS SECTION ====== */}
               <div className="space-y-3 text-left">
                 <div className="flex justify-between items-center">
                   <h2 className="text-lg font-bold text-white font-serif tracking-tight">Active Tasks & Targets</h2>
@@ -478,7 +467,6 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
                   </button>
                 </div>
 
-                {/* List of training targets */}
                 <div className="space-y-3">
                   {myTargets.length > 0 ? (
                     myTargets.map((t, index) => (
@@ -487,8 +475,8 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
                         className="flex items-center justify-between p-4 bg-black/40 border border-zinc-800 hover:border-[#D98353]/30 rounded-2xl shadow-sm transition-all duration-300"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-neutral-900 border border-zinc-800 flex items-center justify-center text-xl shrink-0">
-                            {index % 2 === 0 ? '🎙️' : '🎹'}
+                          <div className="w-8 h-8 rounded-full bg-black/40 border border-white/5 flex items-center justify-center shrink-0">
+                            {index % 2 === 0 ? <Mic2 size={14} className="text-[#D98353]" /> : <Music size={14} className="text-[#E6AF2E]" />}
                           </div>
                           
                           <div className="space-y-0.5">
@@ -499,7 +487,8 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xl text-amber-500"><Sparkles size={24} /></span>
                           <div className="text-right shrink-0">
                             <span className="block text-xs font-bold text-[#D98353]">{t.progress}% rate</span>
                             <input 
@@ -526,7 +515,6 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
             </>
           )}
 
-          {/* ====== ANONYMOUS SUGGESTIONS TOGGLE ====== */}
           <div className="bg-black/40 border border-[#D98353]/15 rounded-3xl p-5 flex items-center justify-between text-left">
             <div>
               <h2 className="text-sm font-bold text-white">Anonymous Suggestions Mode</h2>
@@ -547,12 +535,11 @@ export default function ProfileView({currentUser, onProfileUpdate, onRequestToas
 
           {profile.role === 'member' && (
             <>
-              {/* ====== 2026 TREASURY MANDATES LEDGER ====== */}
               <div className="space-y-4 text-left pt-2">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-850 pb-2 gap-2">
                   <div>
-                    <h3 className="font-bold text-white flex items-center gap-2 text-base font-serif">
-                      <span>💳</span> 2026 Monthly Society Mandates Ledger
+                    <h3 className="text-lg font-serif font-bold text-[#ECE6E1] mb-2 flex items-center gap-2">
+                      <CreditCard size={18} className="text-[#D98353]" /> 2026 Monthly Society Mandates Ledger
                     </h3>
                     <p className="text-xs text-zinc-400 mt-0.5">Check verified ledger status marked by the society treasurer.</p>
                   </div>

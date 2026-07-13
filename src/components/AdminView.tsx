@@ -17,6 +17,9 @@ import {
 import { compressImageBase64 } from '../db/imageCompressor';
 import { getWorkspaceToken } from '../lib/workspaceAuth';
 import { createCalendarEvent } from '../lib/workspaceApi';
+import {
+  Users, DollarSign, Palette, Clapperboard, ShoppingBag, Mic2, Sparkles, Pin, Megaphone, Calendar, Target, Settings, Check, X, FileText, Trash2, Plus, ArrowRight, Save
+} from 'lucide-react';
 
 interface AdminViewProps {
   currentUser: Profile;
@@ -28,18 +31,18 @@ interface AdminViewProps {
 export default function AdminView({currentUser, onRequestToast, onRefreshTrigger, activeMonth}: AdminViewProps) {
   // Tabs definition
   const TABS = [
-    { id: 'users', label: '👥 Users & Approval' },
-    { id: 'mandates', label: '💵 Mandate Desk' },
-    { id: 'site_vision', label: '🎨 Vision & Medals' },
-    { id: 'media', label: '🎬 Media Hall' },
-    { id: 'merchandise_cms', label: '🛍️ Merchandise CMS' },
-    { id: 'core-members', label: '🎺 Core Team CMS' },
-    { id: 'alumni', label: '✨ Alumni CMS' },
-    { id: 'custom', label: '📌 Dashboard Segs' },
-    { id: 'notices', label: '📢 Notices Feed' },
-    { id: 'events', label: '📅 Practice Timetable' },
-    { id: 'targets', label: '🎯 Monthly Targets' },
-    { id: 'settings_backup', label: '⚙️ Settings & Backup' }
+    { id: 'users', label: 'Users & Approval', icon: <Users size={16} /> },
+    { id: 'mandates', label: 'Mandate Desk', icon: <DollarSign size={16} /> },
+    { id: 'site_vision', label: 'Vision & Medals', icon: <Palette size={16} /> },
+    { id: 'media', label: 'Media Hall', icon: <Clapperboard size={16} /> },
+    { id: 'merchandise_cms', label: 'Merchandise CMS', icon: <ShoppingBag size={16} /> },
+    { id: 'core-members', label: 'Core Team CMS', icon: <Mic2 size={16} /> },
+    { id: 'alumni', label: 'Alumni CMS', icon: <Sparkles size={16} /> },
+    { id: 'custom', label: 'Dashboard Segs', icon: <Pin size={16} /> },
+    { id: 'notices', label: 'Notices Feed', icon: <Megaphone size={16} /> },
+    { id: 'events', label: 'Practice Timetable', icon: <Calendar size={16} /> },
+    { id: 'targets', label: 'Monthly Targets', icon: <Target size={16} /> },
+    { id: 'settings_backup', label: 'Settings & Backup', icon: <Settings size={16} /> }
   ].filter(tab => {
     if (tab.id === 'settings_backup') {
       return currentUser.role === 'president';
@@ -1692,7 +1695,10 @@ export default function AdminView({currentUser, onRequestToast, onRefreshTrigger
                 : 'bg-white/[0.02] hover:bg-white/[0.06] text-[#AC9E94] hover:text-[#ECE6E1] border border-white/10'
             }`}
           >
-            {tab.label}
+            <span className="flex items-center gap-2">
+              {tab.icon}
+              <span>{tab.label}</span>
+            </span>
           </button>
         ))}
       </div>

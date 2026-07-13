@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { dbInstance, Profile, SiteContent } from '../db/mockDb';
+import { Calendar, ClipboardCheck, Users, Trophy, ScrollText, Edit3, AlertTriangle, Wrench, Scale, Coins, BarChart, Save, PenTool, Check, X } from 'lucide-react';
 
 interface RulesViewProps {
   currentUser: Profile;
@@ -29,13 +30,13 @@ export default function RulesView({ currentUser, onRequestToast }: RulesViewProp
   const [pointsTitle, setPointsTitle] = useState('Evaluations & Points Assessment Ledger Weights');
   const [pointsDesc, setPointsDesc] = useState('The active Leaderboard scores of society student members are calculated through a rigorous weights system managed by administrators. Points are allocated across four key operational quadrants:');
 
-  const [pointsQ1Title, setPointsQ1Title] = useState('🗓️ ATTENDANCE');
+  const [pointsQ1Title, setPointsQ1Title] = useState('ATTENDANCE');
   const [pointsQ1Desc, setPointsQ1Desc] = useState('Points awarded for attending standard schedules, rehearsals, and choir alignments on time.');
-  const [pointsQ2Title, setPointsQ2Title] = useState('📋 WEEKLY TASKS');
+  const [pointsQ2Title, setPointsQ2Title] = useState('WEEKLY TASKS');
   const [pointsQ2Desc, setPointsQ2Desc] = useState('Ticking off weekly tracks, masterclass workshops, and individual skill logs assigned inside monthly targets.');
-  const [pointsQ3Title, setPointsQ3Title] = useState('🤝 CONTRIBUTIONS');
+  const [pointsQ3Title, setPointsQ3Title] = useState('CONTRIBUTIONS');
   const [pointsQ3Desc, setPointsQ3Desc] = useState('Extra leadership in stage design, digital setup, and mentoring new society recruits during lobby jams.');
-  const [pointsQ4Title, setPointsQ4Title] = useState('🏅 CHAMPIONSHIPS');
+  const [pointsQ4Title, setPointsQ4Title] = useState('CHAMPIONSHIPS');
   const [pointsQ4Desc, setPointsQ4Desc] = useState('Prestigious recognitions earned at inter-college fests, state singing ensembles, or grand recitals.');
 
   // Check if role is admin or president
@@ -134,9 +135,7 @@ export default function RulesView({ currentUser, onRequestToast }: RulesViewProp
       {/* ====== HEADER ====== */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div>
-          <h1 className="text-3xl font-serif text-[#ECE6E1]">
-            📜 Society <span className="text-[#D98353]">Rules & Regulations</span>
-          </h1>
+          <h1 className="text-3xl font-serif text-[#ECE6E1] flex items-center gap-3"><ScrollText size={28} className="text-[#D98353]"/> Society <span className="text-[#D98353]">Rules & Regulations</span></h1>
           <p className="text-xs text-[#AC9E94] mt-1">
             The institutional charter, compliance code, points scoring philosophy, and monthly operations of the Malhaar Music Society.
           </p>
@@ -160,14 +159,14 @@ export default function RulesView({ currentUser, onRequestToast }: RulesViewProp
                 : 'bg-gradient-to-r from-[#D98353] to-[#B35F30] hover:shadow-[0_0_15px_rgba(217,131,83,0.3)] text-black'
             }`}
           >
-            {isEditing ? '✕ Cancel Editing' : '✏️ Edit Rules & Charters'}
+            {isEditing ? <><X size={14}/> Cancel Editing</> : <><Edit3 size={14}/> Edit Rules & Charters</>}
           </button>
         )}
       </div>
 
       {hasUnpaidMandate && (
         <div className="bg-red-950/40 border border-red-500/30 p-5 rounded-2xl flex items-start gap-4 animate-pulse">
-          <span className="text-2xl mt-0.5" id="mandate-warning-icon">⚠️</span>
+          <span className="text-red-400 mt-0.5" id="mandate-warning-icon"><AlertTriangle size={24} /></span>
           <div className="space-y-1">
             <strong className="text-sm text-red-200 block uppercase font-mono tracking-wider">Financial Mandate Warning</strong>
             <p className="text-xs text-red-300 leading-relaxed">
@@ -180,7 +179,7 @@ export default function RulesView({ currentUser, onRequestToast }: RulesViewProp
       {isEditing && (
         <div className="p-6 bg-[#1C0F0B]/30 border-2 border-dashed border-[#D98353]/55 rounded-3xl space-y-6">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🛠️</span>
+            <span className="text-[#D98353]"><Wrench size={20} /></span>
             <strong className="text-sm text-[#D98353] uppercase font-mono tracking-wider">Admin/President Interactive Command Desk</strong>
           </div>
           <p className="text-xs text-[#AC9E94]">
@@ -195,7 +194,7 @@ export default function RulesView({ currentUser, onRequestToast }: RulesViewProp
         {/* Module 1: General Code of Conduct */}
         <div className="bg-white/[0.02] border border-white/10 p-6 rounded-2xl space-y-4 hover:border-[#D98353]/30 transition-all duration-300">
           <div className="flex items-center gap-3">
-            <span className="text-xl text-[#D98353]">⚖️</span>
+            <span className="text-[#D98353]"><Scale size={20} /></span>
             {isEditing ? (
               <input
                 type="text"
@@ -315,7 +314,7 @@ export default function RulesView({ currentUser, onRequestToast }: RulesViewProp
         {/* Module 2: The Mandate System & Warning Flags */}
         <div className="bg-[#1C0F0B]/20 border border-[#D98353]/15 p-6 rounded-2xl space-y-4 hover:border-[#D98353]/30 transition-all duration-300">
           <div className="flex items-center gap-3">
-            <span className="text-xl text-amber-500">💰</span>
+            <span className="text-amber-500"><Coins size={20} /></span>
             {isEditing ? (
               <input
                 type="text"
@@ -365,7 +364,7 @@ export default function RulesView({ currentUser, onRequestToast }: RulesViewProp
         {/* Module 3: Points Assessment & Leaderboard Weights */}
         <div className="bg-white/[0.02] border border-white/10 p-6 rounded-2xl space-y-4 hover:border-[#D98353]/30 transition-all duration-300 col-span-1 md:col-span-2">
           <div className="flex items-center gap-3">
-            <span className="text-xl text-[#55F2A6]">📊</span>
+            <span className="text-[#55F2A6]"><BarChart size={20} /></span>
             {isEditing ? (
               <input
                 type="text"
@@ -522,7 +521,7 @@ export default function RulesView({ currentUser, onRequestToast }: RulesViewProp
               onClick={handleSaveAllRules}
               className="px-5 py-2 bg-[#D98353] hover:bg-amber-400 hover:shadow-lg text-black text-xs font-mono font-extrabold uppercase tracking-widest rounded-xl transition-all cursor-pointer"
             >
-              💾 Save Custom Rules
+              <Save size={16}/> Save Custom Rules
             </button>
           </div>
         </div>
@@ -531,7 +530,7 @@ export default function RulesView({ currentUser, onRequestToast }: RulesViewProp
       {/* ====== COMPLIANCE AGREEMENT INTERACTION ====== */}
       {!isEditing && (
         <div className="p-8 bg-gradient-to-br from-[#1C0F0B] to-black border border-[#D98353]/35 rounded-3xl flex flex-col items-center justify-center text-center space-y-4 shadow-xl">
-          <span className="text-3xl">🖋️</span>
+          <span className="text-zinc-500 block"><PenTool size={36} className="mx-auto"/></span>
           <h3 className="font-serif text-xl font-bold text-[#ECE6E1]">Bylaws & Charter Acknowledgment</h3>
           <p className="text-xs text-[#AC9E94] max-w-xl leading-relaxed">
             As a registered member of the Malhaar Music Society, you are required to acknowledge and respect these rules to preserve the professional musical culture of the society.

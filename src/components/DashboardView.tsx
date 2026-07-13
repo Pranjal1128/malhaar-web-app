@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { ChevronUp, ChevronDown, Search, Users, Shield, Star, Terminal, Landmark, Bell, Trash2, Eye, Target, Sparkles, Clapperboard, Plus, Image as ImageIcon, Folder, Video, FileText, FolderOpen, Rocket, RefreshCw, Calendar, Globe, Award } from 'lucide-react';
 import {dbInstance, Profile, ClubEvent, Achievement, Merchandise, MediaFolder, Alumni, CustomSection, CoreMember} from '../db/mockDb';
 import {compressImageBase64} from '../db/imageCompressor';
 
@@ -239,21 +240,21 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
       )}
 
       {/* ====== 1. HERO PANEL ====== */}
-      <section className="relative rounded-3xl overflow-hidden bg-black/40 backdrop-blur-2xl border border-white/10 p-8 sm:p-12 shadow-[0_30px_70px_rgba(0,0,0,0.8)] flex flex-col md:flex-row items-center justify-between gap-8 text-left">
+      <section className="relative rounded-3xl overflow-hidden glass-panel p-8 sm:p-14 shadow-[0_40px_80px_rgba(0,0,0,0.9)] flex flex-col md:flex-row items-center justify-between gap-12 text-left">
         {/* Glow circles behind text */}
-        <div className="absolute top-[-20%] right-[-10%] w-96 h-96 rounded-full bg-[#D98353]/15 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-[-15%] left-[-10%] w-80 h-80 rounded-full bg-[#E6AF2E]/10 blur-[80px] pointer-events-none" />
+        <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#D98353]/15 blur-[120px] pointer-events-none animate-pulse-glow" />
+        <div className="absolute bottom-[-15%] left-[-10%] w-[400px] h-[400px] rounded-full bg-[#E6AF2E]/10 blur-[100px] pointer-events-none" />
         
         <div className="space-y-6 max-w-xl relative ::z-10 text-left">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#2A160F] text-[#D98353] border border-[#D98353]/30 shadow-[0_0_15px_rgba(217,131,83,0.15)]">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase bg-[#2A160F]/80 text-[#D98353] border border-[#D98353]/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_0_20px_rgba(217,131,83,0.15)]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#D98353] animate-pulse" />
             {siteContent.live_status_text || 'Season Auditions Live'}
           </span>
           <div className="space-y-2">
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-serif text-[#ECE6E1] leading-tight font-black tracking-wide uppercase">
+            <h1 className="text-5xl sm:text-6xl lg:text-8xl font-serif leading-tight font-black tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-[#ECE6E1] to-[#8C7D73] drop-shadow-sm">
               MALHAAR
             </h1>
-            <h2 className="text-base sm:text-lg font-medium text-[#D98353] tracking-wide font-serif">
+            <h2 className="text-base sm:text-lg font-medium text-gradient-copper tracking-wider font-serif">
               The Music Society of Motilal Nehru College (Morning)
             </h2>
             <div className="flex items-center gap-2 font-mono text-[10px] text-stone-500 uppercase font-bold tracking-widest">
@@ -268,13 +269,13 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
           <div className="flex flex-wrap gap-4 pt-2">
             <a
               href="#media-gallery"
-              className="px-6 py-3 bg-gradient-to-r from-[#D98353] to-[#B35F30] hover:shadow-[0_0_25px_rgba(217,131,83,0.4)] text-black font-bold text-xs uppercase tracking-wider rounded-xl transition-all hover:-translate-y-0.5"
+              className="px-8 py-3.5 premium-button rounded-xl"
             >
               Explore MEDIA HALL OF MALHAAR
             </a>
             <a
               href="#about"
-              className="px-6 py-3 bg-white/[0.03] hover:bg-white/[0.08] text-[#ECE6E1] border border-white/10 hover:border-white/20 font-bold text-xs uppercase tracking-wider rounded-xl transition-all"
+              className="px-8 py-3.5 glass-panel glass-panel-hover text-[#ECE6E1] font-bold text-xs uppercase tracking-widest rounded-xl transition-all"
             >
               About the Society
             </a>
@@ -282,19 +283,19 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
         </div>
 
         {/* Floating Graphics Container */}
-        <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-square flex items-center justify-center relative z-10">
-          <div className="absolute inset-4 rounded-full border border-dashed border-[#D98353]/20 animate-[spin_40s_linear_infinite]" />
-          <div className="absolute inset-12 rounded-full border border-white/5 animate-[spin_20s_linear_infinite_reverse]" />
+        <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-square flex items-center justify-center relative z-10 animate-float-slow">
+          <div className="absolute inset-4 rounded-full border border-dashed border-[#D98353]/30 animate-[spin_40s_linear_infinite]" />
+          <div className="absolute inset-12 rounded-full border border-white/10 animate-[spin_20s_linear_infinite_reverse]" />
           
-          <div className="absolute w-40 h-40 rounded-full bg-gradient-to-br from-[#D98353] to-[#803816] flex items-center justify-center p-[2px] shadow-[0_0_40px_rgba(217,131,83,0.3)] z-10">
-            <div className="w-full h-full rounded-full bg-black/90 flex flex-col items-center justify-center text-[#ECE6E1] relative overflow-hidden group">
-              <span className="text-5xl font-serif select-none text-amber-500 group-hover:scale-110 transition-transform duration-500">♫</span>
-              <span className="text-[10px] uppercase font-semibold text-[#8C7D73] mt-2 tracking-widest font-mono">Est. 2010</span>
+          <div className="absolute w-44 h-44 rounded-full bg-gradient-to-br from-[#D98353] via-[#B35F30] to-[#803816] flex items-center justify-center p-[2px] shadow-[0_0_50px_rgba(217,131,83,0.4)] z-10">
+            <div className="w-full h-full rounded-full bg-[#0A0807] flex flex-col items-center justify-center text-[#ECE6E1] relative overflow-hidden group">
+              <span className="text-6xl font-serif select-none text-gradient-copper group-hover:scale-110 transition-transform duration-500">♫</span>
+              <span className="text-[10px] uppercase font-bold text-[#8C7D73] mt-2 tracking-[0.3em] font-mono">Est. 2010</span>
             </div>
           </div>
           
-          <div className="absolute top-8 left-8 w-8 h-8 rounded-full bg-gradient-to-r from-[#E6AF2E] to-amber-500 flex items-center justify-center text-xs text-[#120F0D] font-black shadow-[0_0_15px_rgba(230,175,46,0.3)] select-none">♭</div>
-          <div className="absolute bottom-8 right-8 w-9 h-9 rounded-full bg-gradient-to-r from-[#D98353] to-[#B35F30] flex items-center justify-center text-sm text-[#120F0D] font-black shadow-[0_0_15px_rgba(217,131,83,0.3)] select-none">♯</div>
+          <div className="absolute top-8 left-8 w-10 h-10 rounded-full bg-gradient-to-r from-[#E6AF2E] to-amber-600 flex items-center justify-center text-sm text-[#120F0D] font-black shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),0_0_20px_rgba(230,175,46,0.4)] select-none">♭</div>
+          <div className="absolute bottom-8 right-8 w-12 h-12 rounded-full bg-gradient-to-r from-[#D98353] to-[#B35F30] flex items-center justify-center text-base text-[#120F0D] font-black shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),0_0_20px_rgba(217,131,83,0.4)] select-none">♯</div>
         </div>
       </section>
 
@@ -302,31 +303,31 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div 
           onClick={() => setShowMembersRoster(!showMembersRoster)}
-          className="bg-white/[0.02] backdrop-blur-xl border border-white/15 rounded-2xl p-6 text-center shadow-lg relative group overflow-hidden transition-all duration-300 hover:border-[#D98353]/60 hover:shadow-[0_15px_30px_rgba(0,0,0,0.4),0_0_15px_rgba(217,131,83,0.1)] cursor-pointer select-none"
+          className="glass-panel glass-panel-hover rounded-2xl p-6 text-center relative group overflow-hidden cursor-pointer select-none"
         >
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#D98353]/15 blur-xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#D98353]/20 blur-2xl pointer-events-none" />
           <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#D98353] font-bold mb-2">Registered Active Members</h3>
           {/* Output real current count from database */}
-          <p className="text-4xl font-mono font-bold text-[#ECE6E1] tracking-tight group-hover:scale-105 transition-transform duration-300">
-            {profiles.filter(p => p.role === 'member' && p.approved).length} Active
+          <p className="text-5xl font-serif font-bold text-[#ECE6E1] tracking-tight group-hover:scale-105 transition-transform duration-300">
+            {profiles.filter(p => p.role === 'member' && p.approved).length} <span className="text-lg text-stone-500 font-sans tracking-normal">Active</span>
           </p>
-          <p className="text-[10px] text-amber-500/90 font-mono mt-1.5 flex items-center justify-center gap-1">
-            <span>{showMembersRoster ? "▲ Collapse directory roster" : "▼ Expand full profile directory 🔍"}</span>
+          <p className="text-[10px] text-amber-500/90 font-mono mt-2 flex items-center justify-center gap-1 font-bold">
+            <span className="flex items-center gap-1.5 justify-center">{showMembersRoster ? <><ChevronUp size={14} /> Collapse directory roster</> : <><ChevronDown size={14} /> Expand full profile directory <Search size={12} /></>}</span>
           </p>
         </div>
-        <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center shadow-lg relative group overflow-hidden transition-all duration-300 hover:border-[#E6AF2E]/40 hover:shadow-[0_15px_30px_rgba(0,0,0,0.4),0_0_15px_rgba(230,175,46,0.1)]">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#E6AF2E]/10 blur-xl pointer-events-none" />
+        <div className="glass-panel glass-panel-hover rounded-2xl p-6 text-center relative group overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#E6AF2E]/15 blur-2xl pointer-events-none" />
           <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#D98353] font-bold mb-2">Media Hall Archive</h3>
-          <p className="text-4xl font-mono font-bold text-[#ECE6E1] tracking-tight group-hover:scale-105 transition-transform duration-300">
-            {events.length} Items
+          <p className="text-5xl font-serif font-bold text-[#ECE6E1] tracking-tight group-hover:scale-105 transition-transform duration-300">
+            {events.length} <span className="text-lg text-stone-500 font-sans tracking-normal">Items</span>
           </p>
-          <p className="text-xs text-[#AC9E94] mt-1.5">Society clips, jam recordings & picture drives</p>
+          <p className="text-xs text-[#AC9E94] mt-2 font-medium">Society clips, jam recordings & picture drives</p>
         </div>
-        <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center shadow-lg relative group overflow-hidden transition-all duration-300 hover:border-[#D98353]/40 hover:shadow-[0_15px_30px_rgba(0,0,0,0.4),0_0_15px_rgba(217,131,83,0.1)]">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#D98353]/10 blur-xl pointer-events-none" />
+        <div className="glass-panel glass-panel-hover rounded-2xl p-6 text-center relative group overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#D98353]/15 blur-2xl pointer-events-none" />
           <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#D98353] font-bold mb-2">Trophy Achievements</h3>
-          <p className="text-4xl font-mono font-bold text-[#ECE6E1] tracking-tight group-hover:scale-105 transition-transform duration-300">
-            {achievements.length} Medals
+          <p className="text-5xl font-serif font-bold text-[#ECE6E1] tracking-tight group-hover:scale-105 transition-transform duration-300">
+            {achievements.length} <span className="text-lg text-stone-500 font-sans tracking-normal">Medals</span>
           </p>
           <p className="text-xs text-[#AC9E94] mt-1.5">1st place state choir trophies and badges</p>
         </div>
@@ -338,7 +339,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
             <div>
               <h4 className="text-base font-serif font-bold text-[#ECE6E1] flex items-center gap-2">
-                <span>👥 Society Register Directory</span>
+                <span className="flex items-center gap-2"><Users size={18} /> Society Register Directory</span>
                 <span className="text-[10px] font-mono bg-[#2A160F] text-[#D98353] px-2 py-0.5 rounded-lg border border-[#D98353]/20">Approved Roster</span>
               </h4>
               <p className="text-xs text-[#AC9E94] mt-1">Browse active approved singers, players, and technical production members.</p>
@@ -419,7 +420,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
         <div className="bg-white/[0.01] border border-white/5 rounded-3xl p-6 space-y-4">
           <div className="border-b border-white/5 pb-2">
             <h3 className="text-lg font-serif font-bold text-[#ECE6E1] flex items-center gap-2">
-              <span>👥 Core Member and Serving Body of Society</span>
+              <span className="flex items-center gap-2"><Shield size={18} /> Core Member and Serving Body of Society</span>
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
             </h3>
             <p className="text-xs text-[#AC9E94]">The official active Core board members managing rehearsals, schedules, and recital categories.</p>
@@ -452,8 +453,8 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
               }
 
               return currentCoreDisplay.map((member, idx) => (
-                <div key={member.id || `core_${idx}`} className="p-3 bg-black/40 border border-white/5 rounded-xl flex items-center gap-3 hover:border-[#D98353]/35 transition-all">
-                  <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-1 ring-[#D98353]/40 bg-[#2A160F] flex items-center justify-center">
+                <div key={member.id || `core_${idx}`} className="glass-panel glass-panel-hover p-3 rounded-xl flex items-center gap-4 transition-all">
+                  <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 ring-1 ring-[#D98353]/40 bg-[#2A160F] flex items-center justify-center">
                     {member.image_url ? (
                       <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
                     ) : (
@@ -461,11 +462,11 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
                     )}
                   </div>
                   <div className="min-w-0 text-left">
-                    <p className="text-xs font-bold text-white truncate leading-none mb-1 flex items-center gap-1">
+                    <p className="text-sm font-bold text-white truncate leading-none mb-1.5 flex items-center gap-1">
                       <span>{member.name}</span>
-                      {member.is_starred && <span className="text-[10px] text-yellow-400">⭐</span>}
+                      {member.is_starred && <span className="text-[10px] text-yellow-400"><Star size={12} fill="currentColor" /></span>}
                     </p>
-                    <p className="text-[10px] text-[#D98353] font-medium leading-none font-mono tracking-wider truncate">
+                    <p className="text-[10px] text-[#D98353] font-medium leading-none font-mono tracking-wider truncate mb-1">
                       {member.position.toUpperCase() || 'CORE OFFICER'} • {member.tenure}
                     </p>
                     <p className="text-[9.5px] text-stone-500 truncate leading-none mt-1">
@@ -482,7 +483,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
         <div className="bg-[#1c120f] border border-[#D98353]/20 rounded-3xl p-6 space-y-4 shadow-xl">
           <div className="border-b border-white/5 pb-2">
             <h3 className="text-lg font-serif font-bold text-gradient bg-gradient-to-r from-amber-400 to-[#D98353] bg-clip-text text-transparent flex items-center gap-2">
-              <span>💻 APP ARCHITECTS & DEVELOPERS</span>
+              <span className="flex items-center gap-2"><Terminal size={18} /> APP ARCHITECTS & DEVELOPERS</span>
             </h3>
             <p className="text-xs text-[#AC9E94]">The digital design and technology engineers who crafted and optimized the Malhaar ecosystem.</p>
           </div>
@@ -512,9 +513,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
             <div>
               <span className="font-mono text-[10px] text-[#D98353] font-bold uppercase tracking-widest block">Active Society Broadcasting</span>
-              <h3 className="text-2xl font-serif text-white font-bold flex items-center gap-2">
-                🏛️ LOBBY SHOWCASE & BULLETIN
-              </h3>
+                <span className="flex items-center gap-2"><Landmark size={24} /> LOBBY SHOWCASE & BULLETIN</span>
               <p className="text-xs text-[#AC9E94]">Announcements, live highlights, and bespoke custom features managed by the administrators.</p>
             </div>
           </div>
@@ -522,7 +521,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
           {/* Lobby Segment Cards list */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             {customSections.map((sec, idx) => (
-              <div key={sec.id || `sec_${idx}`} className="bg-black/45 border border-white/5 rounded-2xl overflow-hidden hover:border-[#D98353]/35 transition-all duration-300 shadow-xl relative group flex flex-col justify-between">
+              <div key={sec.id || `sec_${idx}`} className="glass-panel glass-panel-hover rounded-2xl overflow-hidden relative group flex flex-col justify-between">
                 {sec.image_url && (
                   <div className="w-full h-44 overflow-hidden relative">
                     <img src={sec.image_url} alt={sec.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -533,7 +532,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
 
                 <div className="p-6 space-y-3 text-left flex-grow">
                   {!sec.image_url && (
-                    <span className="text-[9px] uppercase font-mono font-bold tracking-widest text-[#D98353]/80 block">📌 Lobby Announcement</span>
+                    <span className="text-[9px] uppercase font-mono font-bold tracking-widest text-[#D98353]/80 flex items-center gap-1"><Bell size={12} /> Lobby Announcement</span>
                   )}
                   <h4 className="font-serif font-bold text-lg text-white group-hover:text-[#D98353] transition-colors">{sec.title}</h4>
                   <p className="text-xs text-[#AC9E94] leading-relaxed text-justify whitespace-pre-wrap">{sec.content}</p>
@@ -542,17 +541,17 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
                     <div className="flex flex-wrap gap-2 pt-2">
                       {sec.drive_link && (
                         <a href={sec.drive_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-[10px] font-mono font-bold hover:bg-blue-500/20 transition-colors">
-                          📁 Drive
+                          <Folder size={12} /> Drive
                         </a>
                       )}
                       {sec.meet_link && (
                         <a href={sec.meet_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-[10px] font-mono font-bold hover:bg-emerald-500/20 transition-colors">
-                          🎥 Meet
+                          <Video size={12} /> Meet
                         </a>
                       )}
                       {sec.form_link && (
                         <a href={sec.form_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg text-[10px] font-mono font-bold hover:bg-purple-500/20 transition-colors">
-                          📝 Forms
+                          <FileText size={12} /> Forms
                         </a>
                       )}
                     </div>
@@ -569,7 +568,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
                       onClick={() => handleDeleteLobbySegment(sec.id, sec.title)}
                       className="text-[10px] text-red-400 font-mono font-bold uppercase tracking-wider hover:text-red-300 hover:underline cursor-pointer flex items-center gap-1"
                     >
-                      🗑️ Delete Segment
+                      <Trash2 size={12} /> Delete Segment
                     </button>
                   </div>
                 )}
@@ -587,7 +586,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
             className="w-full flex items-center justify-between text-left focus:outline-none cursor-pointer"
           >
             <span className="font-serif text-lg font-bold text-[#ECE6E1] flex items-center gap-2.5">
-              <span className="text-[#D98353] text-xl">👁</span> Our Vision Statement
+              <span className="text-[#D98353] flex items-center"><Eye size={20} /></span> Our Vision Statement
             </span>
             <span className="text-xs text-[#D98353] font-mono font-semibold uppercase tracking-wider">{visionOpen ? '[-] Hide' : '[+] View'}</span>
           </button>
@@ -605,7 +604,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
             className="w-full flex items-center justify-between text-left focus:outline-none cursor-pointer"
           >
             <span className="font-serif text-lg font-bold text-[#ECE6E1] flex items-center gap-2.5">
-              <span className="text-[#D98353] text-xl">🎯</span> Our Core Mission
+              <span className="text-[#D98353] flex items-center"><Target size={20} /></span> Our Core Mission
             </span>
             <span className="text-xs text-[#D98353] font-mono font-semibold uppercase tracking-wider">{missionOpen ? '[-] Hide' : '[+] View'}</span>
           </button>
@@ -668,7 +667,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
           <div className="border-b border-white/5 pb-4">
             <span className="font-mono text-xs text-amber-500 uppercase font-bold tracking-wider">The Legacy Board</span>
             <h2 className="text-3xl font-serif text-[#ECE6E1] font-bold">
-              ✨ <span className="text-gradient bg-gradient-to-r from-[#E6AF2E] to-yellow-500 bg-clip-text text-transparent">Luminous Alumni Section</span>
+              <span className="flex items-center gap-2"><Sparkles size={24} className="text-[#E6AF2E]" /> <span className="text-gradient bg-gradient-to-r from-[#E6AF2E] to-yellow-500 bg-clip-text text-transparent">Luminous Alumni Section</span></span>
             </h2>
             <p className="text-xs text-[#AC9E94] mt-0.5">Meet prominent previous directors who shaped classical soundscapes across generations.</p>
           </div>
@@ -706,7 +705,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
           <div>
             <span className="font-mono text-xs text-[#D98353] uppercase font-bold tracking-wider">Dynamic Society Memories</span>
             <h2 className="text-3xl font-serif text-[#ECE6E1] font-bold">
-              🎬 MEDIA HALL <span className="text-[#D98353]">OF MALHAAR</span>
+              <span className="flex items-center gap-2"><Clapperboard size={24} className="text-[#ECE6E1]" /> <span>MEDIA HALL <span className="text-[#D98353]">OF MALHAAR</span></span></span>
             </h2>
             <p className="text-xs text-[#AC9E94] mt-0.5">Students and core members can contribute precious moments, audio files, or Drive folder packages for collective memories.</p>
           </div>
@@ -717,7 +716,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
                 onClick={() => setShowGalleryUpload(!showGalleryUpload)}
                 className="px-4 py-2 bg-[#D98353] hover:bg-[#b06135] text-black font-semibold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer"
               >
-                {showGalleryUpload ? '✕ Close Admin Panel' : '➕ Upload Memory / Drive Link'}
+                {showGalleryUpload ? <span className="flex items-center gap-1.5"><ChevronUp size={16} /> Close Admin Panel</span> : <span className="flex items-center gap-1.5"><Plus size={16} /> Upload Memory / Drive Link</span>}
               </button>
             )}
 
@@ -773,7 +772,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
             {/* NEW: Choose picture from gallery of active members / people to add as header of media */}
             <div className="space-y-2">
               <label className="block text-[10px] uppercase font-mono tracking-wider text-[#AC9E94] font-bold">
-                🖼️ CHOOSE PIX FROM PERSON'S DIRECTORY PORTRAITS (OR CHOOSE THE PRESETS)
+                <span className="flex items-center gap-2"><ImageIcon size={14} /> CHOOSE PIX FROM PERSON'S DIRECTORY PORTRAITS (OR CHOOSE THE PRESETS)</span>
               </label>
               <div className="flex gap-3 overflow-x-auto pb-3 pt-1 scrollbar-thin scrollbar-thumb-white/10">
                 {profiles.filter(p => p.approved && p.profile_image_url).map((p, idx) => (
@@ -863,7 +862,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
             </div>
 
             <div>
-              <label className="block text-[10px] uppercase font-mono tracking-wider text-[#D98353] mb-1.5 font-bold">📂 Google Drive Shared Folder Link (Sync 15+ Photos)</label>
+              <label className="flex items-center gap-1.5 text-[10px] uppercase font-mono tracking-wider text-[#D98353] mb-1.5 font-bold"><FolderOpen size={14} /> Google Drive Shared Folder Link (Sync 15+ Photos)</label>
               <input
                 type="url"
                 placeholder="https://drive.google.com/drive/folders/your-folder-id-or-link"
@@ -883,9 +882,9 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
 
             <button
               type="submit"
-              className="w-full py-2.5 bg-gradient-to-r from-[#D98353] to-[#b55e2d] text-black font-semibold uppercase text-xs tracking-wider rounded-xl hover:shadow-lg transition-transform active:scale-95 cursor-pointer font-mono"
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#D98353] to-[#b55e2d] text-black font-semibold uppercase text-xs tracking-wider rounded-xl hover:shadow-lg transition-transform active:scale-95 cursor-pointer font-mono"
             >
-              🚀 PUBLISH TO MEDIA HALL
+              <Rocket size={14} /> PUBLISH TO MEDIA HALL
             </button>
           </form>
         )}
@@ -899,7 +898,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
             {filteredEvents.map((event, idx) => (
               <div 
                 key={event.id || `event_${idx}`}
-                className="bg-white/[0.02] backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-xl hover:shadow-[0_15px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(217,131,83,0.1)] group hover:border-[#D98353]/50 transition-all duration-300 flex flex-col justify-between"
+                className="glass-panel glass-panel-hover rounded-2xl overflow-hidden flex flex-col justify-between group"
               >
                 <div>
                   <div className="aspect-[4/3] bg-stone-950 relative overflow-hidden">
@@ -937,10 +936,10 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
                         href={event.drive_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full py-2.5 bg-[#2A160F] hover:bg-[#D98353] hover:text-black border border-[#D98353]/35 text-[#D98353] text-[10px] font-mono font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all text-center block"
+                        className="w-full py-2.5 bg-[#2A160F] hover:bg-[#D98353] hover:text-black border border-[#D98353]/35 text-[#D98353] text-[10px] font-mono font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all text-center"
                         title="Opens Google Drive gallery folder in a new tab"
                       >
-                        📂 View Drive Folder (15+ Photos)
+                        <FolderOpen size={14} /> View Drive Folder (15+ Photos)
                       </a>
                     )}
                     {currentUser && (currentUser.role === 'admin' || currentUser.role === 'president') && (
@@ -949,7 +948,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
                         onClick={() => handleDeleteGalleryEvent(event.id, event.name)}
                         className="w-full py-1.5 bg-red-950/20 hover:bg-red-900 hover:text-white border border-red-900/40 text-red-400 text-[9px] font-mono font-bold uppercase tracking-widest rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer"
                       >
-                        🗑️ Purge Folder Record
+                        <Trash2 size={12} /> Purge Folder Record
                       </button>
                     )}
                   </div>
@@ -984,19 +983,19 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
               )}
               {achievementYears.length > 1 && (
                 <option value="previous">
-                  🔄 Show All Previous Records
+                  Show All Previous Records
                 </option>
               )}
               {achievementYears.map((yr, idx) => {
                 if (yr === mostRecentAchievementYear) return null;
                 return (
                   <option key={yr || `yr_${idx}`} value={yr || ''}>
-                    📅 Year {yr || 'N/A'}
+                    Year {yr || 'N/A'}
                   </option>
                 );
               })}
               <option value="All">
-                🌐 Show All Records (All Years)
+                Show All Records (All Years)
               </option>
             </select>
           </div>
@@ -1011,14 +1010,14 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
             {filteredAchievements.map((ach, idx) => (
               <div 
                 key={ach.id || `ach_${idx}`}
-                className="bg-white/[0.02] backdrop-blur-md border border-white/10 hover:border-[#E6AF2E]/50 rounded-2xl p-5 shadow-xl flex flex-col justify-start gap-3 transition-all duration-300 hover:shadow-[0_15px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(230,175,46,0.1)] shadow-black/80 hover:-translate-y-1 text-left w-full"
+                className="glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col justify-start gap-3 text-left w-full"
               >
                 <div className="space-y-1 text-left">
                   <div className="flex items-center gap-2">
                     <span className="text-[9px] font-mono font-bold text-[#E6AF2E] bg-yellow-950/30 border border-yellow-900/30 px-2 py-0.5 rounded-md">
                       {ach.year}
                     </span>
-                    <span className="text-[#E6AF2E] text-[10px] uppercase font-bold tracking-wider">🏅 Victory</span>
+                    <span className="flex items-center gap-1.5 text-[#E6AF2E] text-[10px] uppercase font-bold tracking-wider"><Award size={12} /> Victory</span>
                   </div>
                   <h3 className="font-serif text-base font-bold text-[#ECE6E1] leading-snug">
                     {ach.title}
@@ -1066,7 +1065,7 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
             {filteredMerchandise.map((item, idx) => (
               <div 
                 key={item.id || `item_${idx}`}
-                className="bg-white/[0.02] backdrop-blur-md border border-white/10 hover:border-[#D98353]/50 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xl transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_0_15px_rgba(217,131,83,0.1)] shadow-black/90"
+                className="glass-panel glass-panel-hover rounded-2xl overflow-hidden flex flex-col justify-between"
               >
                 <div>
                   <div className="aspect-[16/10] bg-zinc-950 overflow-hidden relative">

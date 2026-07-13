@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, Square, Radio, Music, Award, Sparkles, BookOpen, Volume2, Info, Check, Plus, Trash2 } from 'lucide-react';
+import { Play, Square, Radio, Music, Award, Sparkles, BookOpen, Volume2, Info, Check, Plus, Trash2, Edit3, AlertTriangle, Mic2 } from 'lucide-react';
 import { Profile, KnowledgeItem, dbInstance } from '../db/mockDb';
 import SvaraPracticeHub from './SvaraPracticeHub';
 
@@ -1006,7 +1006,7 @@ export default function MusicLabView({ currentUser, onRequestToast }: MusicLabVi
                       <div className="space-y-0.5">
                         <h4 className="text-sm font-serif font-bold text-[#ECE6E1]">{note.title}</h4>
                         <div className="flex items-center gap-2 text-[10px] font-mono text-stone-500">
-                          <span className="text-[#D98353] font-bold">✍️ {note.userName}</span>
+                          <span className="flex items-center gap-1 text-[#D98353] font-bold"><Edit3 size={10}/> {note.userName}</span>
                           <span>•</span>
                           <span>{new Date(note.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                         </div>
@@ -1045,8 +1045,8 @@ export default function MusicLabView({ currentUser, onRequestToast }: MusicLabVi
       </div>
 
       {audioError && (
-        <div className="mt-4 p-4 rounded-xl bg-red-950/20 border border-red-900/30 text-xs text-red-400 font-mono">
-          ⚠️ <strong>Audio Error:</strong> {audioError}
+        <div className="mt-4 p-4 rounded-xl bg-red-950/20 border border-red-900/30 text-xs text-red-400 font-mono flex items-center gap-2">
+          <AlertTriangle size={14} /> <strong>Audio Error:</strong> {audioError}
         </div>
       )}
     </div>

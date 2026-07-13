@@ -408,7 +408,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
       <div className="space-y-6 animate-fade-in pb-16 w-full max-w-4xl mx-auto px-4 text-left">
         <div className="border-b border-white/5 pb-4">
           <h1 className="text-3xl font-serif text-[#ECE6E1]">
-            🌐 Google <span className="text-[#D98353]">Workspace Hub</span>
+            <Globe size={28} className="text-[#D98353] inline-block -mt-1 mr-2"/>Google <span className="text-[#D98353]">Workspace Hub</span>
           </h1>
           <p className="text-xs text-[#AC9E94]">
             Unify your collegiate workflow with Google Calendar, Google Drive, Gmail, Sheets, and Meet.
@@ -417,7 +417,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
 
         <div className="bg-gradient-to-b from-[#1C120F] to-[#0A0807] border border-[#D98353]/30 p-8 rounded-2xl flex flex-col items-center text-center space-y-6 shadow-xl">
           <div className="w-16 h-16 rounded-full bg-[#D98353]/10 flex items-center justify-center border border-[#D98353]/20 animate-pulse">
-            <span className="text-3xl">🌐</span>
+            <Globe size={32} className="text-white"/>
           </div>
           <div className="space-y-2 max-w-lg">
             <h3 className="text-lg font-serif text-white font-medium">Link Your Google Account</h3>
@@ -428,7 +428,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
 
           {/* Upfront Iframe Sandbox Advisory */}
           <div className="bg-[#1C120F]/90 border border-amber-900/40 p-4 rounded-xl text-center max-w-md text-amber-200 text-xs leading-relaxed space-y-1.5 font-sans">
-            <span className="font-mono font-black block text-[10px] uppercase tracking-wider text-amber-500">⚠️ Running inside preview iframe?</span>
+            <span className="font-mono font-black block text-[10px] uppercase tracking-wider text-amber-500"><AlertTriangle size={12} className="inline-block -mt-0.5 mr-1"/> Running inside preview iframe?</span>
             <p className="text-[11px] text-stone-300">
               Because of browser security constraints on third-party cookies inside sandboxed iframes, the Google authorization popup may fail. Please open the application in a new tab first to link your account smoothly.
             </p>
@@ -487,7 +487,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
               </p>
 
               <div className="pt-1.5 border-t border-white/5 space-y-2">
-                <p className="text-[10px] text-stone-400 uppercase font-mono font-bold">✨ Recommended Solution:</p>
+                <p className="text-[10px] text-stone-400 uppercase font-mono font-bold"><Sparkles size={12} className="inline-block -mt-0.5 mr-1"/> Recommended Solution:</p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <a
                     href={window.location.href}
@@ -529,7 +529,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
       <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-4 gap-4">
         <div>
           <h1 className="text-3xl font-serif text-[#ECE6E1]">
-            🌐 Google <span className="text-[#D98353]">Workspace Hub</span>
+            <Globe size={28} className="text-[#D98353] inline-block -mt-1 mr-2"/>Google <span className="text-[#D98353]">Workspace Hub</span>
           </h1>
           <p className="text-xs text-[#AC9E94]">
             Securely integrating society operations directly with Google Workspace core services.
@@ -687,7 +687,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
                     type="submit"
                     className="w-full h-10 bg-gradient-to-r from-[#D98353] to-[#B35F30] text-black font-semibold text-xs uppercase tracking-wider rounded-xl transition-all hover:shadow-[0_0_12px_rgba(217,131,83,0.3)] cursor-pointer"
                   >
-                    Schedule Event 📅
+                    Schedule Event <Calendar size={16} className="inline-block ml-1"/>
                   </button>
                 </div>
               </form>
@@ -786,7 +786,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
                 onClick={handleCreateMeet}
                 className="px-6 h-11 bg-gradient-to-r from-[#4285F4] to-[#34A853] text-white font-semibold text-xs uppercase tracking-wider rounded-xl transition-all hover:shadow-[0_0_15px_rgba(66,133,244,0.3)] cursor-pointer"
               >
-                Create Instant Meet Space 🎬
+                Create Instant Meet Space <Clapperboard size={16} className="inline-block ml-1"/>
               </button>
             </div>
 
@@ -867,7 +867,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
                     type="submit"
                     className="w-full h-10 bg-gradient-to-r from-[#D98353] to-[#B35F30] text-black font-semibold text-xs uppercase tracking-wider rounded-xl transition-all hover:shadow-[0_0_12px_rgba(217,131,83,0.3)] cursor-pointer"
                   >
-                    Upload Document 🚀
+                    Upload Document <Send size={16} className="inline-block ml-1"/>
                   </button>
                 </div>
               </form>
@@ -983,7 +983,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
                     type="submit"
                     className="w-full h-10 bg-gradient-to-r from-[#D98353] to-[#B35F30] text-black font-semibold text-xs uppercase tracking-wider rounded-xl transition-all hover:shadow-[0_0_12px_rgba(217,131,83,0.3)] cursor-pointer"
                   >
-                    Send Email 🚀
+                    Send Email <Send size={16} className="inline-block ml-1"/>
                   </button>
                 </div>
               </form>
@@ -1074,7 +1074,7 @@ export default function WorkspaceHubView({ currentUser, onRequestToast }: Worksp
                 onClick={handleExportSheet}
                 className="px-6 h-11 bg-gradient-to-r from-[#34A853] to-[#2E7D32] text-white font-semibold text-xs uppercase tracking-wider rounded-xl transition-all hover:shadow-[0_0_15px_rgba(52,168,83,0.3)] cursor-pointer"
               >
-                Assemble & Export Sheet 📊
+                Assemble & Export Sheet <BarChart size={16} className="inline-block ml-1"/>
               </button>
             </div>
 

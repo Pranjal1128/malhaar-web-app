@@ -317,7 +317,7 @@ export default function AuthView({onAuthSuccess, onRequestToast}: AuthViewProps)
         {registeredPending ? (
           <div className="space-y-6 animate-fade-in text-center">
             <div className="inline-flex items-center justify-center p-4 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-2">
-              <span className="text-4xl animate-pulse">⏳</span>
+              <Loader className="animate-spin text-[#D98353] mx-auto" size={36}/>
             </div>
             
             <div className="space-y-3">
@@ -346,7 +346,7 @@ export default function AuthView({onAuthSuccess, onRequestToast}: AuthViewProps)
           <form onSubmit={handleSignIn} className="space-y-5 animate-fade-in text-left">
             {errorMsg && (
               <div className="bg-red-950/50 border-2 border-red-500/40 p-4 rounded-2xl flex items-start gap-3 animate-fade-in text-left shadow-[0_0_15px_rgba(239,68,68,0.15)]">
-                <span className="text-xl mt-0.5" id="auth-error-icon">⚠️</span>
+                <span className="text-red-400 mt-0.5" id="auth-error-icon"><AlertTriangle size={24} /></span>
                 <div className="space-y-1">
                   <strong className="text-xs text-red-200 block uppercase font-mono tracking-wider">Access Denied</strong>
                   <p className="text-xs text-red-300 font-sans leading-relaxed">
@@ -628,7 +628,7 @@ export default function AuthView({onAuthSuccess, onRequestToast}: AuthViewProps)
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="text-xl text-[#AC9E94]">📷</span>
+                      <Camera size={24} className="text-[#AC9E94]" />
                     )}
                   </div>
                   <div className="text-left">

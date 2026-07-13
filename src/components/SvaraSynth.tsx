@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, Square, Radio, Music, Flame, Sparkles } from 'lucide-react';
+import { Play, Square, Radio, Music, Flame, Sparkles, Activity, Triangle, Zap, AlertTriangle } from 'lucide-react';
 
 interface RagaScale {
   name: string;
@@ -398,11 +398,14 @@ export default function SvaraSynth() {
             <Radio className="w-3 h-3 text-[#D98353] animate-pulse" />
             Live Acoustics
           </span>
-          <h3 className="text-xl font-serif font-black text-white tracking-wide flex items-center gap-2">
-            <span>🎼 Malhaar Raga Synthesizer</span>
-            <span className="text-xs font-mono text-amber-500 font-bold bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">Bansuri Synth</span>
-          </h3>
-          <p className="text-xs text-stone-400 mt-1">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#D98353] text-black px-3 py-1.5 rounded-lg shadow-[0_0_10px_rgba(217,131,83,0.3)] border border-[#E6AF2E]/50 font-mono font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+              <Music size={14} />
+              <span>Malhaar Raga Synthesizer</span>
+            </div>
+            <span className="text-[10px] font-mono text-amber-500 font-bold bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">Bansuri Synth</span>
+          </div>
+          <p className="text-xs text-stone-400 mt-2">
             Tap the keys or press physical keys <strong className="text-white font-mono bg-white/5 px-1 py-0.2 rounded">A-S-D-F-G-H-J-K</strong> to play real-time classical melody lines.
           </p>
         </div>
@@ -468,13 +471,16 @@ export default function SvaraSynth() {
                   key={wave}
                   type="button"
                   onClick={() => setSynthWave(wave)}
-                  className={`py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase transition-all cursor-pointer ${
+                  className={`py-1.5 px-1 rounded-lg text-[10px] flex items-center justify-center gap-1.5 font-mono font-bold uppercase transition-all cursor-pointer ${
                     synthWave === wave
                       ? 'bg-[#D98353] text-black font-extrabold'
                       : 'bg-white/5 text-stone-400 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  {wave === 'sine' ? '〰️ Sine (Flute)' : wave === 'triangle' ? '▲ Triangle (Wood)' : wave === 'sawtooth' ? '🗲 Saw (Synth)' : '█ Square (Wind)'}
+                  {wave === 'sine' ? <><Activity size={12}/> Sine</> : 
+                   wave === 'triangle' ? <><Triangle size={12}/> Triangle</> : 
+                   wave === 'sawtooth' ? <><Zap size={12}/> Saw</> : 
+                   <><Square size={12}/> Square</>}
                 </button>
               ))}
             </div>
@@ -562,8 +568,8 @@ export default function SvaraSynth() {
       </div>
 
       {audioError && (
-        <div className="mt-3 text-xs text-red-400 font-mono">
-          ⚠️ {audioError}
+        <div className="mt-4 p-4 rounded-xl bg-red-950/20 border border-red-900/30 text-xs text-red-400 font-mono flex items-center gap-2">
+          <AlertTriangle size={14} /> {audioError}
         </div>
       )}
     </div>
