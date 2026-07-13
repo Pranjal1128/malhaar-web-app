@@ -520,11 +520,31 @@ export default function App() {
   useEffect(() => {
     refreshApplicationData();
     const handleDbUpdate = () => refreshApplicationData();
+    
+    // Automatically fetch latest data when user returns to the tab
+    const handleFocus = () => {
+      // Don't overwrite if the user has pending changes they just made
+      if (!dbInstance.isSyncPending()) {
+        dbInstance.fetchLatestFromServer();
+      }
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        handleFocus();
+      }
+    };
+
     window.addEventListener('malhaar-db-update', handleDbUpdate);
     window.addEventListener('storage', handleDbUpdate);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       window.removeEventListener('malhaar-db-update', handleDbUpdate);
       window.removeEventListener('storage', handleDbUpdate);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [currentUser]);
 
@@ -2873,14 +2893,7 @@ export default function App() {
               This desktop environment is simulating a high-fidelity, full-screen mobile application. This gives you a pixel-perfect rendering of the phone layouts with responsive touch heights.
             </p>
 
-            <div className="space-y-3 bg-[#1E1512]/30 border border-[#3C271F]/40 p-4 rounded-2xl">
-              <span className="text-[10px] font-mono text-[#D98353] uppercase tracking-wider block font-bold">Cabinet Testing Credentials</span>
-              <div className="text-xs space-y-1 text-stone-300 font-mono">
-                <p>• <strong className="text-white">Admin Code</strong>: <code>MALHAARCOREGNG</code></p>
-                <p>• <strong className="text-white">President Code</strong>: <code>MALHAARCORERECORD</code></p>
-                <p className="text-[10px] text-stone-500 pt-1">Type in Core Control Hall or Admin Settings to unlock sensitive sheets.</p>
-              </div>
-            </div>
+
 
             <div className="space-y-2.5">
               <span className="text-[10px] font-mono text-stone-400 uppercase tracking-widest block font-bold">Simulator Controls</span>

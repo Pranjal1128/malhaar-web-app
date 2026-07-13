@@ -635,6 +635,10 @@ export class MockDatabase {
       });
   }
 
+  isSyncPending(): boolean {
+    return this._pendingDirtyKeys.size > 0 || this._syncInFlight;
+  }
+
   loadServerData(data: Record<string, any>): void {
     if (!data || typeof data !== 'object') return;
     this.loadedFromServer = true;
