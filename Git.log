@@ -1,0 +1,273 @@
+2026-08-12 22:09:31.189 [info] > git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file - --amend [168ms]
+2026-08-12 22:09:31.189 [info] Committer identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: no email was given and auto-detection is disabled
+2026-08-12 22:09:31.303 [info] > git config --get-all user.name [108ms]
+2026-08-12 22:09:31.478 [info] > git config --get commit.template [165ms]
+2026-08-12 22:09:31.495 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [171ms]
+2026-08-12 22:09:31.502 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:09:31.610 [info] > git rev-parse refs/remotes/origin/main [108ms]
+2026-08-12 22:09:31.801 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [176ms]
+2026-08-12 22:09:31.814 [info] > git status -z -uall [198ms]
+2026-08-12 22:09:32.135 [info] > git show -s --decorate=full --shortstat --format=%H%n%aN%n%aE%n%at%n%ct%n%P%n%D%n%B -z fa95f86c7df550c72d1a93dc173ebf0a8231a443 -- [302ms]
+2026-08-12 22:09:32.600 [info] > git ls-tree -l HEAD -- src/App.tsx [142ms]
+2026-08-12 22:09:32.611 [info] > git ls-files --stage -- src/App.tsx [138ms]
+2026-08-12 22:09:32.740 [info] > git cat-file -s cda228b74a3181795feae2bb19b172f42821eb41 [123ms]
+2026-08-12 22:09:32.742 [info] > git show --textconv HEAD:src/App.tsx [132ms]
+2026-08-12 22:09:32.872 [info] > git show --textconv :src/App.tsx [120ms]
+2026-08-12 22:09:33.617 [info] > git config --get commit.template [153ms]
+2026-08-12 22:09:33.634 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [154ms]
+2026-08-12 22:09:33.640 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:09:33.739 [info] > git rev-parse refs/remotes/origin/main [100ms]
+2026-08-12 22:09:33.911 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [156ms]
+2026-08-12 22:09:33.919 [info] > git status -z -uall [173ms]
+2026-08-12 22:09:38.775 [info] > git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file - [177ms]
+2026-08-12 22:09:38.775 [info] Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: no email was given and auto-detection is disabled
+2026-08-12 22:09:38.937 [info] > git config --get-all user.name [155ms]
+2026-08-12 22:09:39.092 [info] > git config --get commit.template [148ms]
+2026-08-12 22:09:39.106 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [152ms]
+2026-08-12 22:09:39.112 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:09:39.216 [info] > git rev-parse refs/remotes/origin/main [104ms]
+2026-08-12 22:09:39.385 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [150ms]
+2026-08-12 22:09:39.396 [info] > git status -z -uall [169ms]
+2026-08-12 22:09:39.724 [info] > git show -s --decorate=full --shortstat --format=%H%n%aN%n%aE%n%at%n%ct%n%P%n%D%n%B -z fa95f86c7df550c72d1a93dc173ebf0a8231a443 -- [312ms]
+2026-08-12 22:21:10.081 [info] > git ls-tree -l HEAD -- src/App.tsx [1311ms]
+2026-08-12 22:21:10.112 [info] > git ls-files --stage -- src/App.tsx [908ms]
+2026-08-12 22:21:10.485 [info] > git cat-file -s cda228b74a3181795feae2bb19b172f42821eb41 [365ms]
+2026-08-12 22:21:15.568 [info] > git ls-files --stage -- src/App.tsx [1538ms]
+2026-08-12 22:21:15.607 [info] > git show --textconv :src/App.tsx [1599ms]
+2026-08-12 22:21:16.066 [info] > git ls-tree -l HEAD -- src/App.tsx [2027ms]
+2026-08-12 22:21:16.285 [info] > git show --textconv HEAD:src/App.tsx [2268ms]
+2026-08-12 22:21:16.690 [info] > git cat-file -s cda228b74a3181795feae2bb19b172f42821eb41 [1110ms]
+2026-08-12 22:21:19.682 [info] > git ls-tree -l HEAD -- src/App.tsx [1115ms]
+2026-08-12 22:21:20.154 [info] > git ls-files --stage -- src/App.tsx [1578ms]
+2026-08-12 22:21:20.360 [info] > git branch [1491ms]
+2026-08-12 22:21:21.540 [info] > git reset -q HEAD -- src/App.tsx [1172ms]
+2026-08-12 22:21:21.876 [info] > git cat-file -s cda228b74a3181795feae2bb19b172f42821eb41 [1713ms]
+2026-08-12 22:21:22.309 [info] > git config --get commit.template [751ms]
+2026-08-12 22:21:22.494 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [928ms]
+2026-08-12 22:21:22.503 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:21:22.630 [info] > git show --textconv :src/App.tsx [734ms]
+2026-08-12 22:21:23.381 [info] > git rev-parse refs/remotes/origin/main [878ms]
+2026-08-12 22:21:23.576 [info] > git ls-files --stage -- src/App.tsx [452ms]
+2026-08-12 22:21:23.856 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [455ms]
+2026-08-12 22:21:24.005 [info] > git status -z -uall [613ms]
+2026-08-12 22:21:24.634 [info] > git cat-file -s 36f61368782fddf2363ab6f45957f63d30ca1206 [1051ms]
+2026-08-12 22:21:24.849 [info] > git show --textconv HEAD:src/App.tsx [697ms]
+2026-08-12 22:21:24.867 [info] > git ls-tree -l HEAD -- src/App.tsx [705ms]
+2026-08-12 22:21:25.148 [info] > git show --textconv :src/App.tsx [500ms]
+2026-08-12 22:21:34.343 [info] > git show --textconv :src/App.tsx [985ms]
+2026-08-12 22:21:34.365 [info] > git ls-files --stage -- src/App.tsx [1000ms]
+2026-08-12 22:21:34.650 [info] > git cat-file -s 36f61368782fddf2363ab6f45957f63d30ca1206 [274ms]
+2026-08-12 22:22:02.263 [info] > git branch [135ms]
+2026-08-12 22:22:02.463 [info] > git reset -q HEAD -- src/db/mockDb.ts [194ms]
+2026-08-12 22:22:02.957 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [472ms]
+2026-08-12 22:22:02.964 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:22:03.000 [info] > git config --get commit.template [524ms]
+2026-08-12 22:22:03.155 [info] > git show --textconv HEAD:src/db/mockDb.ts [543ms]
+2026-08-12 22:22:03.194 [info] > git ls-files --stage -- src/db/mockDb.ts [544ms]
+2026-08-12 22:22:03.246 [info] > git show --textconv :src/db/mockDb.ts [616ms]
+2026-08-12 22:22:03.271 [info] > git ls-tree -l HEAD -- src/db/mockDb.ts [633ms]
+2026-08-12 22:22:03.386 [info] > git rev-parse refs/remotes/origin/main [421ms]
+2026-08-12 22:22:03.506 [info] > git cat-file -s 4ef7abd13344e6f3886b055f9944d74dfa9ebc2a [304ms]
+2026-08-12 22:22:03.667 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [263ms]
+2026-08-12 22:22:03.675 [info] > git status -z -uall [282ms]
+2026-08-12 22:22:04.216 [info] > git show --textconv HEAD:src/db/mockDb.ts [372ms]
+2026-08-12 22:22:04.243 [info] > git ls-tree -l HEAD -- src/db/mockDb.ts [388ms]
+2026-08-12 22:22:04.503 [info] > git ls-tree -l HEAD -- src/App.tsx [552ms]
+2026-08-12 22:22:04.534 [info] > git ls-files --stage -- src/App.tsx [593ms]
+2026-08-12 22:22:04.634 [info] > git ls-files --stage -- src/db/mockDb.ts [559ms]
+2026-08-12 22:22:04.642 [info] > git ls-files --stage -- src/App.tsx [634ms]
+2026-08-12 22:22:04.733 [info] > git ls-tree -l HEAD -- src/db/mockDb.ts [716ms]
+2026-08-12 22:22:04.810 [info] > git ls-tree -l HEAD -- src/db/mockDb.ts [545ms]
+2026-08-12 22:22:04.985 [info] > git cat-file -s 36f61368782fddf2363ab6f45957f63d30ca1206 [425ms]
+2026-08-12 22:22:05.007 [info] > git show --textconv HEAD:src/App.tsx [494ms]
+2026-08-12 22:22:05.177 [info] > git show --textconv HEAD:src/db/mockDb.ts [428ms]
+2026-08-12 22:22:05.201 [info] > git cat-file -s 36f61368782fddf2363ab6f45957f63d30ca1206 [550ms]
+2026-08-12 22:22:05.238 [info] > git cat-file -s 4ef7abd13344e6f3886b055f9944d74dfa9ebc2a [597ms]
+2026-08-12 22:22:05.255 [info] > git branch [450ms]
+2026-08-12 22:22:05.433 [info] > git show --textconv :src/App.tsx [438ms]
+2026-08-12 22:22:05.493 [info] > git show --textconv :src/App.tsx [281ms]
+2026-08-12 22:22:05.518 [info] > git show --textconv :src/db/mockDb.ts [269ms]
+2026-08-12 22:22:05.559 [info] > git reset -q HEAD -- src/components/DashboardView.tsx [270ms]
+2026-08-12 22:22:05.734 [info] > git config --get commit.template [163ms]
+2026-08-12 22:22:05.862 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [283ms]
+2026-08-12 22:22:05.874 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:22:06.083 [info] > git ls-tree -l HEAD -- src/components/DashboardView.tsx [331ms]
+2026-08-12 22:22:06.102 [info] > git show --textconv HEAD:src/components/DashboardView.tsx [370ms]
+2026-08-12 22:22:06.171 [info] > git ls-files --stage -- src/components/DashboardView.tsx [410ms]
+2026-08-12 22:22:06.181 [info] > git show --textconv :src/components/DashboardView.tsx [438ms]
+2026-08-12 22:22:06.239 [info] > git rev-parse refs/remotes/origin/main [365ms]
+2026-08-12 22:22:06.478 [info] > git cat-file -s 0e1d5c850530c43c9ada6defb94a21169a3b52d9 [300ms]
+2026-08-12 22:22:06.539 [info] > git status -z -uall [293ms]
+2026-08-12 22:22:06.543 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [287ms]
+2026-08-12 22:22:07.306 [info] > git config --get commit.template [742ms]
+2026-08-12 22:22:07.441 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [866ms]
+2026-08-12 22:22:07.451 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:22:07.828 [info] > git ls-tree -l HEAD -- src/components/DashboardView.tsx [1127ms]
+2026-08-12 22:22:07.835 [info] > git show --textconv HEAD:src/components/DashboardView.tsx [1143ms]
+2026-08-12 22:22:07.877 [info] > git ls-files --stage -- src/App.tsx [1096ms]
+2026-08-12 22:22:07.955 [info] > git ls-files --stage -- src/components/DashboardView.tsx [901ms]
+2026-08-12 22:22:07.975 [info] > git ls-tree -l HEAD -- src/App.tsx [1186ms]
+2026-08-12 22:22:07.991 [info] > git ls-tree -l HEAD -- src/components/DashboardView.tsx [1117ms]
+2026-08-12 22:22:08.049 [info] > git branch [978ms]
+2026-08-12 22:22:08.066 [info] > git ls-tree -l HEAD -- src/db/mockDb.ts [1203ms]
+2026-08-12 22:22:08.207 [info] > git ls-files --stage -- src/App.tsx [1409ms]
+2026-08-12 22:22:08.311 [info] > git rev-parse refs/remotes/origin/main [860ms]
+2026-08-12 22:22:08.529 [info] > git cat-file -s 0e1d5c850530c43c9ada6defb94a21169a3b52d9 [566ms]
+2026-08-12 22:22:08.552 [info] > git ls-tree -l HEAD -- src/components/DashboardView.tsx [686ms]
+2026-08-12 22:22:08.628 [info] > git show --textconv HEAD:src/App.tsx [641ms]
+2026-08-12 22:22:08.742 [info] > git cat-file -s 36f61368782fddf2363ab6f45957f63d30ca1206 [857ms]
+2026-08-12 22:22:08.769 [info] > git reset -q HEAD -- src/components/AdminView.tsx [711ms]
+2026-08-12 22:22:08.772 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [445ms] (cancelled)
+2026-08-12 22:22:08.880 [info] > git status -z -uall [562ms] (cancelled)
+2026-08-12 22:22:09.142 [info] > git show --textconv HEAD:src/components/DashboardView.tsx [1138ms]
+2026-08-12 22:22:09.194 [info] > git show --textconv HEAD:src/db/mockDb.ts [1031ms]
+2026-08-12 22:22:09.261 [info] > git cat-file -s 36f61368782fddf2363ab6f45957f63d30ca1206 [1045ms]
+2026-08-12 22:22:09.527 [info] > git show --textconv :src/components/DashboardView.tsx [987ms]
+2026-08-12 22:22:09.663 [info] > git ls-files --stage -- src/components/AdminView.tsx [715ms]
+2026-08-12 22:22:09.721 [info] > git config --get commit.template [922ms]
+2026-08-12 22:22:09.726 [info] > git show --textconv :src/App.tsx [972ms]
+2026-08-12 22:22:09.781 [info] > git ls-tree -l HEAD -- src/components/AdminView.tsx [843ms]
+2026-08-12 22:22:09.893 [info] > git show --textconv :src/components/AdminView.tsx [964ms]
+2026-08-12 22:22:09.899 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [1023ms]
+2026-08-12 22:22:09.909 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:22:09.929 [info] > git show --textconv HEAD:src/components/AdminView.tsx [1011ms]
+2026-08-12 22:22:10.088 [info] > git show --textconv :src/App.tsx [815ms]
+2026-08-12 22:22:10.257 [info] > git cat-file -s 7fec0d219b5ec2d14bde978450851c4d73a2acf3 [586ms]
+2026-08-12 22:22:10.600 [info] > git rev-parse refs/remotes/origin/main [691ms]
+2026-08-12 22:22:10.913 [info] > git ls-files --stage -- src/App.tsx [868ms]
+2026-08-12 22:22:10.970 [info] > git ls-files --stage -- src/App.tsx [858ms]
+2026-08-12 22:22:11.010 [info] > git ls-tree -l HEAD -- src/db/mockDb.ts [944ms]
+2026-08-12 22:22:11.029 [info] > git ls-tree -l HEAD -- src/components/DashboardView.tsx [952ms]
+2026-08-12 22:22:11.041 [info] > git ls-tree -l HEAD -- src/App.tsx [985ms]
+2026-08-12 22:22:11.042 [info] > git ls-files --stage -- src/components/AdminView.tsx [708ms]
+2026-08-12 22:22:11.060 [info] > git ls-tree -l HEAD -- src/components/AdminView.tsx [973ms]
+2026-08-12 22:22:11.372 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [714ms]
+2026-08-12 22:22:11.503 [info] > git status -z -uall [895ms]
+2026-08-12 22:22:11.591 [info] > git show --textconv HEAD:src/components/AdminView.tsx [521ms]
+2026-08-12 22:22:11.713 [info] > git show --textconv HEAD:src/db/mockDb.ts [692ms]
+2026-08-12 22:22:11.715 [info] > git cat-file -s 36f61368782fddf2363ab6f45957f63d30ca1206 [737ms]
+2026-08-12 22:22:11.717 [info] > git cat-file -s 36f61368782fddf2363ab6f45957f63d30ca1206 [795ms]
+2026-08-12 22:22:11.782 [info] > git show --textconv HEAD:src/components/DashboardView.tsx [742ms]
+2026-08-12 22:22:11.896 [info] > git show --textconv HEAD:src/App.tsx [836ms]
+2026-08-12 22:22:11.899 [info] > git cat-file -s 7fec0d219b5ec2d14bde978450851c4d73a2acf3 [850ms]
+2026-08-12 22:22:12.626 [info] > git show --textconv HEAD:src/components/AdminView.tsx [923ms]
+2026-08-12 22:22:12.652 [info] > git add -A -- . [1150ms]
+2026-08-12 22:22:12.662 [info] > git ls-tree -l HEAD -- src/components/AdminView.tsx [949ms]
+2026-08-12 22:22:12.754 [info] > git show --textconv :src/App.tsx [859ms]
+2026-08-12 22:22:12.757 [info] > git show --textconv :src/App.tsx [932ms]
+2026-08-12 22:22:13.084 [info] > git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file - [422ms]
+2026-08-12 22:22:13.084 [info] Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: no email was given and auto-detection is disabled
+2026-08-12 22:22:13.216 [info] > git config --get-all user.name [125ms]
+2026-08-12 22:22:13.374 [info] > git config --get commit.template [148ms]
+2026-08-12 22:22:13.397 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [163ms]
+2026-08-12 22:22:13.405 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:22:13.555 [info] > git rev-parse refs/remotes/origin/main [150ms]
+2026-08-12 22:22:13.836 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [263ms]
+2026-08-12 22:22:13.846 [info] > git status -z -uall [282ms]
+2026-08-12 22:22:14.393 [info] > git show -s --decorate=full --shortstat --format=%H%n%aN%n%aE%n%at%n%ct%n%P%n%D%n%B -z fa95f86c7df550c72d1a93dc173ebf0a8231a443 -- [527ms]
+2026-08-12 22:22:14.552 [info] > git ls-files --stage -- src/App.tsx [237ms]
+2026-08-12 22:22:14.626 [info] > git ls-files --stage -- src/App.tsx [322ms]
+2026-08-12 22:22:14.677 [info] > git ls-tree -l HEAD -- src/App.tsx [302ms]
+2026-08-12 22:22:14.687 [info] > git show --textconv HEAD:src/App.tsx [354ms]
+2026-08-12 22:22:14.875 [info] > git cat-file -s cda228b74a3181795feae2bb19b172f42821eb41 [241ms]
+2026-08-12 22:22:14.956 [info] > git cat-file -s cda228b74a3181795feae2bb19b172f42821eb41 [398ms]
+2026-08-12 22:22:15.113 [info] > git show --textconv :src/App.tsx [228ms]
+2026-08-12 22:22:15.130 [info] > git show --textconv :src/App.tsx [160ms]
+2026-08-12 22:22:15.483 [info] > git config --get commit.template [178ms]
+2026-08-12 22:22:15.489 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [176ms]
+2026-08-12 22:22:15.497 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:22:15.639 [info] > git rev-parse refs/remotes/origin/main [142ms]
+2026-08-12 22:22:15.850 [info] > git status -z -uall [203ms]
+2026-08-12 22:22:15.859 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [203ms]
+2026-08-12 22:22:38.870 [info] > git ls-tree -l HEAD -- src/App.tsx [218ms]
+2026-08-12 22:22:38.875 [info] > git ls-files --stage -- src/App.tsx [215ms]
+2026-08-12 22:22:39.061 [info] > git cat-file -s cda228b74a3181795feae2bb19b172f42821eb41 [179ms]
+2026-08-12 22:22:39.075 [info] > git show --textconv HEAD:src/App.tsx [183ms]
+2026-08-12 22:22:44.707 [info] > git show --textconv :src/App.tsx [768ms]
+2026-08-12 22:22:44.710 [info] > git ls-tree -l HEAD -- src/App.tsx [684ms]
+2026-08-12 22:22:44.718 [info] > git show --textconv HEAD:src/App.tsx [765ms]
+2026-08-12 22:22:44.767 [info] > git ls-files --stage -- src/App.tsx [753ms]
+2026-08-12 22:22:44.961 [info] > git cat-file -s cda228b74a3181795feae2bb19b172f42821eb41 [170ms]
+2026-08-12 22:23:41.716 [info] > git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file - [154ms]
+2026-08-12 22:23:41.716 [info] Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: no email was given and auto-detection is disabled
+2026-08-12 22:23:41.842 [info] > git config --get-all user.name [119ms]
+2026-08-12 22:23:42.005 [info] > git config --get commit.template [154ms]
+2026-08-12 22:23:42.030 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [167ms]
+2026-08-12 22:23:42.037 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:23:42.146 [info] > git rev-parse refs/remotes/origin/main [108ms]
+2026-08-12 22:23:42.298 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [136ms]
+2026-08-12 22:23:42.313 [info] > git status -z -uall [158ms]
+2026-08-12 22:23:42.637 [info] > git show -s --decorate=full --shortstat --format=%H%n%aN%n%aE%n%at%n%ct%n%P%n%D%n%B -z fa95f86c7df550c72d1a93dc173ebf0a8231a443 -- [307ms]
+2026-08-12 22:24:08.026 [info] > git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file - [367ms]
+2026-08-12 22:24:08.026 [info] Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: no email was given and auto-detection is disabled
+2026-08-12 22:24:08.213 [info] > git config --get-all user.name [177ms]
+2026-08-12 22:24:08.433 [info] > git config --get commit.template [211ms]
+2026-08-12 22:24:08.439 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [208ms]
+2026-08-12 22:24:08.449 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\admin\Desktop\malhaar-web-app\.git\refs\remotes\origin\main'
+2026-08-12 22:24:08.604 [info] > git rev-parse refs/remotes/origin/main [155ms]
+2026-08-12 22:24:08.850 [info] > git status -z -uall [240ms]
+2026-08-12 22:24:08.855 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [235ms]
+2026-08-12 22:24:09.572 [info] > git show -s --decorate=full --shortstat --format=%H%n%aN%n%aE%n%at%n%ct%n%P%n%D%n%B -z fa95f86c7df550c72d1a93dc173ebf0a8231a443 -- [699ms]
+2026-08-12 22:24:15.561 [info] > git ls-tree -l HEAD -- src/App.tsx [180ms]
+2026-08-12 22:24:15.574 [info] > git ls-files --stage -- src/App.tsx [185ms]
+2026-08-12 22:24:15.745 [info] > git cat-file -s cda228b74a3181795feae2bb19b172f42821eb41 [163ms]
