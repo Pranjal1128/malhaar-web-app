@@ -68,7 +68,26 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
     setMerchandise(dbInstance.getMerchandise());
     setMediaFolders(dbInstance.getMediaFolders() || []);
     setProfiles(dbInstance.getProfiles());
-    setAlumni(dbInstance.getAlumni() || []);
+    // Synthesize Alumni records from alumni data and profiles with role 'alumni'
+    const alData = dbInstance.getAlumni() || [];
+    const synthesizedAlumni: Alumni[] = [...alData];
+    const alumniProfiles = dbInstance.getProfiles().filter(p => p.role === 'alumni');
+    alumniProfiles.forEach(p => {
+      if (!synthesizedAlumni.some(a => a.id === p.id || a.user_id === p.id)) {
+        synthesizedAlumni.push({
+          id: p.id,
+          user_id: p.id,
+          name: p.name,
+          role_held: p.domain ? `${p.domain} Artist / Lead` : 'Legacy Alumni',
+          graduation_year: p.year || 'Graduate',
+          bio: p.bio || 'Malhaar Alumni Network Member.',
+          image_url: p.profile_image_url || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
+          domain: p.domain,
+          email: p.email
+        });
+      }
+    });
+    setAlumni(synthesizedAlumni);
     setCustomSections(dbInstance.getCustomSections() || []);
     setCoreMembers(dbInstance.getCoreMembers() || []);
 
@@ -479,30 +498,160 @@ export default function DashboardView({currentUser, onRequestToast, onRefreshTri
           </div>
         </div>
 
-        {/* Dedicated App Developers Showcase Section */}
-        <div className="bg-[#1c120f] border border-[#D98353]/20 rounded-3xl p-6 space-y-4 shadow-xl">
-          <div className="border-b border-white/5 pb-2">
-            <h3 className="text-lg font-serif font-bold text-gradient bg-gradient-to-r from-amber-400 to-[#D98353] bg-clip-text text-transparent flex items-center gap-2">
-              <span className="flex items-center gap-2"><Terminal size={18} /> APP ARCHITECTS & DEVELOPERS</span>
+        {/* Dedicated App Developer & Vision Section (Restructured into 3 Distinct Subsections) */}
+        <div className="bg-[#1c120f]/90 border border-[#D98353]/30 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
+          <div className="border-b border-white/10 pb-3 text-left">
+            <h3 className="text-xl font-serif font-bold text-gradient bg-gradient-to-r from-amber-400 via-[#D98353] to-amber-500 bg-clip-text text-transparent flex items-center gap-2">
+              <Terminal size={22} className="text-[#D98353]" /> DEVELOPER & CREATIVE FOUNDATIONS
             </h3>
-            <p className="text-xs text-[#AC9E94]">The digital design and technology engineers who crafted and optimized the Malhaar ecosystem.</p>
+            <p className="text-xs text-[#AC9E94] mt-1 font-mono uppercase tracking-wider">
+              The engineering architecture, core vision, and community appreciation powering the Malhaar application.
+            </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-5 items-center bg-black/40 p-4 border border-white/5 rounded-2xl">
-            {siteContent.developer_picture ? (
-              <img
-                src={siteContent.developer_picture}
-                alt="Lead Software Engineer Developer"
-                className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[#D98353]/50 shrink-0"
-              />
-            ) : null}
-            <div className="space-y-1 text-center sm:text-left">
-              <h4 className="text-sm font-serif font-extrabold text-[#ECE6E1]">{siteContent.developer_name || "Lead Technical Systems Architect"}</h4>
-              <p className="text-[10px] text-amber-500 font-bold font-mono uppercase tracking-wider">{siteContent.developer_chapter || "MALHAAR TECH COMMAND CHAPTER"}</p>
-              <p className="text-xs text-[#AC9E94] leading-relaxed">
-                {siteContent.about_developer || "Responsible for full-stack engineering, secure local/server persistence layers, fine-grained point evaluations ledger desks, and password-protected cabinet gates."}
-              </p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* SUBSECTION A: About Developer */}
+            <div className="bg-black/50 border border-white/10 hover:border-[#D98353]/40 p-5 rounded-2xl space-y-4 flex flex-col justify-between transition-all duration-300 shadow-lg text-left">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-xs font-serif font-bold text-[#ECE6E1] uppercase tracking-wider flex items-center gap-1.5">
+                    💻 About Developer
+                  </span>
+                  <span className="text-[9px] font-mono font-bold text-[#D98353] bg-[#2A160F] border border-[#D98353]/25 px-2 py-0.5 rounded">
+                    Chapter I
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pt-1">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 ring-2 ring-[#D98353]/40 bg-[#2A160F] flex items-center justify-center shadow-md">
+                    {siteContent.developer_picture ? (
+                      <img
+                        src={siteContent.developer_picture}
+                        alt="Developer"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as any).src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200";
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"
+                        alt="Developer Avatar"
+                        className="w-full h-full object-cover opacity-85"
+                      />
+                    )}
+                  </div>
+
+                  <div className="space-y-1 text-center sm:text-left min-w-0">
+                    <h4 className="text-sm font-serif font-extrabold text-[#ECE6E1] truncate">
+                      {siteContent.developer_name || "Lead Technical Systems Architect"}
+                    </h4>
+                    <p className="text-[10px] text-amber-500 font-bold font-mono uppercase tracking-wider truncate">
+                      {siteContent.developer_chapter || "MALHAAR TECH COMMAND CHAPTER"}
+                    </p>
+                    <p className="text-xs text-[#AC9E94] leading-relaxed text-justify mt-1">
+                      {siteContent.about_developer || "Responsible for full-stack engineering, secure local/server persistence layers, fine-grained point evaluations ledger desks, and password-protected cabinet gates."}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
+
+            {/* SUBSECTION B: Vision */}
+            <div className="bg-black/50 border border-white/10 hover:border-[#E6AF2E]/40 p-5 rounded-2xl space-y-4 flex flex-col justify-between transition-all duration-300 shadow-lg text-left">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-xs font-serif font-bold text-[#ECE6E1] uppercase tracking-wider flex items-center gap-1.5">
+                    👁️ Vision
+                  </span>
+                  <span className="text-[9px] font-mono font-bold text-[#E6AF2E] bg-yellow-950/30 border border-yellow-900/30 px-2 py-0.5 rounded">
+                    Chapter II
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pt-1">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 ring-2 ring-[#E6AF2E]/40 bg-black flex items-center justify-center shadow-md">
+                    {siteContent.vision_picture ? (
+                      <img
+                        src={siteContent.vision_picture}
+                        alt="Vision"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as any).src = "https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&q=80&w=200";
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src="https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&q=80&w=200"
+                        alt="Vision Illustration"
+                        className="w-full h-full object-cover opacity-85"
+                      />
+                    )}
+                  </div>
+
+                  <div className="space-y-1 text-center sm:text-left min-w-0">
+                    <h4 className="text-sm font-serif font-extrabold text-[#ECE6E1] truncate">
+                      {siteContent.vision_title || "Our Musical & Cultural Vision"}
+                    </h4>
+                    <p className="text-[10px] text-[#E6AF2E] font-bold font-mono uppercase tracking-wider truncate">
+                      CREATIVE HORIZONS & EXPANSION
+                    </p>
+                    <p className="text-xs text-[#AC9E94] leading-relaxed text-justify mt-1">
+                      {siteContent.vision_text || siteContent.our_vision || "Empowering every student performer to synthesize classical traditions with modern music technologies, creating an inclusive, high-impact platform for lifetime creative expression."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SUBSECTION C: Special Thanks */}
+            <div className="bg-black/50 border border-white/10 hover:border-amber-400/40 p-5 rounded-2xl space-y-4 flex flex-col justify-between transition-all duration-300 shadow-lg text-left">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <span className="text-xs font-serif font-bold text-[#ECE6E1] uppercase tracking-wider flex items-center gap-1.5">
+                    ✨ Special Thanks
+                  </span>
+                  <span className="text-[9px] font-mono font-bold text-amber-300 bg-amber-950/40 border border-amber-900/40 px-2 py-0.5 rounded">
+                    Chapter III
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pt-1">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 ring-2 ring-amber-400/40 bg-stone-950 flex items-center justify-center shadow-md">
+                    {siteContent.thanks_picture ? (
+                      <img
+                        src={siteContent.thanks_picture}
+                        alt="Special Thanks"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as any).src = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=200";
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=200"
+                        alt="Special Thanks"
+                        className="w-full h-full object-cover opacity-85"
+                      />
+                    )}
+                  </div>
+
+                  <div className="space-y-1 text-center sm:text-left min-w-0">
+                    <h4 className="text-sm font-serif font-extrabold text-[#ECE6E1] truncate">
+                      {siteContent.thanks_name || "Faculty Mentors & Advisory Board"}
+                    </h4>
+                    <p className="text-[10px] text-amber-400 font-bold font-mono uppercase tracking-wider truncate">
+                      GUIDANCE & COMMUNITY SUPPORT
+                    </p>
+                    <p className="text-xs text-[#AC9E94] leading-relaxed text-justify mt-1">
+                      {siteContent.thanks_text || "Heartfelt gratitude to our founding mentors, campus student council, and dedicated alumni whose unwavering support and guidance make Malhaar possible every step of the way."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

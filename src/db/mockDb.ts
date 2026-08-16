@@ -45,6 +45,10 @@ export interface Alumni {
   graduation_year: string;
   bio: string;
   image_url: string;
+  user_id?: string;
+  domain?: string;
+  email?: string;
+  phone_number?: string;
 }
 
 export interface CustomSection {
@@ -512,6 +516,46 @@ const defaultSiteContent: SiteContent[] = [
   {
     content_key: "live_status_text",
     content_value: "Season Auditions Live"
+  },
+  {
+    content_key: "developer_name",
+    content_value: "Lead Technical Systems Architect"
+  },
+  {
+    content_key: "developer_chapter",
+    content_value: "Malhaar Tech Command Chapter"
+  },
+  {
+    content_key: "about_developer",
+    content_value: "Responsible for full-stack engineering, secure local/server persistence layers, fine-grained point evaluations ledger desks, and password-protected cabinet gates."
+  },
+  {
+    content_key: "developer_picture",
+    content_value: ""
+  },
+  {
+    content_key: "vision_title",
+    content_value: "Our Musical & Cultural Vision"
+  },
+  {
+    content_key: "vision_text",
+    content_value: "Empowering every student performer to synthesize classical traditions with modern music technologies, creating an inclusive, high-impact platform for lifetime creative expression."
+  },
+  {
+    content_key: "vision_picture",
+    content_value: ""
+  },
+  {
+    content_key: "thanks_name",
+    content_value: "Faculty Mentors & Advisory Board"
+  },
+  {
+    content_key: "thanks_text",
+    content_value: "Heartfelt gratitude to our founding mentors, campus student council, and dedicated alumni whose unwavering support and guidance make Malhaar possible every step of the way."
+  },
+  {
+    content_key: "thanks_picture",
+    content_value: ""
   }
 ];
 

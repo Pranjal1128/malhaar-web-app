@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Profile,
   Performance,
@@ -106,7 +106,7 @@ const VoiceNotePlayer = ({ audioUrl }: { audioUrl: string }) => {
 
   return (
     <div className="flex items-center gap-3 bg-[#FAF3F0]/95 border border-[#EBE3DE] p-3 rounded-2xl w-full max-w-[280px] shadow-sm">
-      <button 
+      <button
         onClick={togglePlay}
         className="w-10 h-10 shrink-0 rounded-full bg-[#D98353] hover:bg-[#B35F30] text-white flex items-center justify-center shadow-md transition-colors cursor-pointer"
       >
@@ -120,12 +120,11 @@ const VoiceNotePlayer = ({ audioUrl }: { audioUrl: string }) => {
         {/* Animated wave lines */}
         <div className="flex items-end gap-[2px] h-6">
           {[6, 12, 18, 10, 14, 8, 16, 12, 10, 14, 6, 12, 18, 10, 8, 14, 6].map((h, i) => (
-            <span 
-              key={i} 
-              style={{ height: `${h}px` }} 
-              className={`w-[2.5px] rounded-full bg-[#D98353] transition-all duration-300 ${
-                isPlaying ? 'animate-pulse bg-[#B35F30]' : 'opacity-50'
-              }`}
+            <span
+              key={i}
+              style={{ height: `${h}px` }}
+              className={`w-[2.5px] rounded-full bg-[#D98353] transition-all duration-300 ${isPlaying ? 'animate-pulse bg-[#B35F30]' : 'opacity-50'
+                }`}
             />
           ))}
         </div>
@@ -138,6 +137,25 @@ const VoiceNotePlayer = ({ audioUrl }: { audioUrl: string }) => {
   );
 };
 
+export const isUserInTargetAudience = (p: { name: string; id: string; role: string; domain?: string }, assignedTo: string | undefined): boolean => {
+  const target = (assignedTo || 'All').trim();
+  if (target === 'All' || target === '') return p.role === 'member';
+  if (target === 'Core') return p.role === 'core' || p.role === 'president' || p.role === 'admin';
+  if (target === 'Alumni') return p.role === 'alumni';
+  
+  const wingNames = ['Classical', 'Western', 'Rapper', 'Instrumentalist', 'Production'];
+  if (wingNames.some(w => w.toLowerCase() === target.toLowerCase())) {
+    return p.role === 'member' && (p.domain || '').toLowerCase() === target.toLowerCase();
+  }
+  
+  // Individual(s) or multiple comma-separated entries
+  const list = target.toLowerCase().split(',').map(n => n.trim());
+  return list.includes(p.name.toLowerCase()) ||
+         list.includes(p.id.toLowerCase()) ||
+         (p.domain && list.includes(p.domain.toLowerCase())) ||
+         list.includes(p.role.toLowerCase());
+};
+
 export default function App() {
   // Authentication & session state
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
@@ -147,8 +165,23 @@ export default function App() {
   const [customLogo, setCustomLogo] = useState<string>('');
   const logoInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Core navigation view routing
-  const [activeView, setActiveView] = useState<string>('dashboard');
+  // Core navigation view routing with history stack for Back navigation
+  const [activeView, setActiveViewRaw] = useState<string>('dashboard');
+  const [navHistory, setNavHistory] = useState<string[]>([]);
+
+  const setActiveView = (view: string) => {
+    if (view !== activeView) {
+      setNavHistory(prev => [...prev, activeView]);
+      window.history.pushState({ view }, '');
+      setActiveViewRaw(view);
+    }
+  };
+
+  const goBack = () => {
+    if (navHistory.length > 0) {
+      window.history.back();
+    }
+  };
 
   // Active Month (Global operational month)
   const [activeMonth, setActiveMonth] = useState<string>(() => dbInstance.getActiveMonth());
@@ -247,7 +280,7 @@ export default function App() {
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
-    
+
     // Read theme mode
     const storedTheme = localStorage.getItem('malhaar_theme') as any;
     if (storedTheme) {
@@ -262,14 +295,31 @@ export default function App() {
       setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     }, 1000);
 
-    return () => clearInterval(clockInterval);
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.view) {
+        setActiveViewRaw(event.state.view);
+        setNavHistory(prev => {
+          if (prev.length === 0) return prev;
+          const updated = [...prev];
+          updated.pop();
+          return updated;
+        });
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    window.history.replaceState({ view: 'dashboard' }, '');
+
+    return () => {
+      clearInterval(clockInterval);
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
   // Automatically adjust user points and streak for attendance markings
   const updateUserPointsForAttendance = (userId: string, isPresent: boolean, wasPresent: boolean | undefined) => {
     const performances = dbInstance.getPerformance();
     let userPerf = performances.find(p => p.user_id === userId);
-    
+
     if (!userPerf) {
       userPerf = {
         user_id: userId,
@@ -285,7 +335,7 @@ export default function App() {
     }
 
     const oldStatusPresent = wasPresent === true;
-    
+
     if (isPresent && !oldStatusPresent) {
       userPerf.attendance_points = (userPerf.attendance_points || 0) + 3;
       userPerf.total_points = (userPerf.total_points || 0) + 3;
@@ -295,7 +345,7 @@ export default function App() {
       userPerf.total_points = Math.max(0, (userPerf.total_points || 0) - 3);
       userPerf.attendance_streak = Math.max(0, (userPerf.attendance_streak || 0) - 2);
     }
-    
+
     dbInstance.savePerformance(performances);
   };
 
@@ -340,7 +390,7 @@ export default function App() {
     setAllAttendanceRecords(dbInstance.getAttendanceRecords());
     setActiveProfiles(profiles.filter(p => p.approved));
     setAlumniMessages(dbInstance.getAlumniMessages() || []);
-    
+
     const loadedMonth = dbInstance.getActiveMonth();
     setActiveMonth(loadedMonth);
 
@@ -419,7 +469,7 @@ export default function App() {
       triggerToast("Please connect your Google Workspace Calendar first!", "error");
       return;
     }
-    
+
     const startTimeStr = `${targetDateStr}T${slot.start_time}:00`;
     const endTimeStr = `${targetDateStr}T${slot.end_time}:00`;
 
@@ -443,7 +493,7 @@ export default function App() {
   const handleLaunchRosterForSlot = (slot: any, dateStr: string) => {
     // 1. Check if a session already exists for this slot on this date
     const existingSession = allSessions.find(s => s.description === slot.id && s.date === dateStr);
-    
+
     let sessionId = "";
     if (existingSession) {
       sessionId = existingSession.id;
@@ -456,43 +506,53 @@ export default function App() {
         title: slot.title,
         description: slot.id
       };
-      
+
       const updatedSessions = [...allSessions, newSession];
       setAllSessions(updatedSessions);
       dbInstance.saveAttendanceSessions(updatedSessions);
-      
-      // Select profiles: if slot has assigned_to and it is not 'All', find that specific person by name, otherwise active profiles based on meeting type
-      const isCoreMeeting = slot.title.toLowerCase().includes("core team");
-      const filteredProfs = isCoreMeeting
-        ? activeProfiles.filter(p => p.role === 'core' || p.role === 'president' || p.role === 'admin')
-        : activeProfiles.filter(p => p.role === 'member');
 
-      const targetProfiles = (slot.assigned_to && slot.assigned_to !== 'All')
-        ? filteredProfs.filter(p => slot.assigned_to!.split(',').map(n => n.trim().toLowerCase()).includes(p.name.toLowerCase()))
-        : filteredProfs;
-        
+      // Select profiles based on slot.assigned_to target audience
+      const isCoreMeeting = slot.title.toLowerCase().includes("core team") || slot.event_type === 'Core Meet';
+      const assignedTo = (slot.assigned_to || 'All').trim();
+      const wingNames = ['Classical', 'Western', 'Rapper', 'Instrumentalist', 'Production'];
+
+      let targetProfiles: typeof activeProfiles;
+      if (isCoreMeeting || assignedTo === 'Core') {
+        targetProfiles = activeProfiles.filter(p => p.role === 'core' || p.role === 'president' || p.role === 'admin');
+      } else if (assignedTo === 'All' || assignedTo === '') {
+        targetProfiles = activeProfiles.filter(p => p.role === 'member');
+      } else if (assignedTo === 'Alumni') {
+        targetProfiles = activeProfiles.filter(p => p.role === 'alumni');
+      } else if (wingNames.some(w => w.toLowerCase() === assignedTo.toLowerCase())) {
+        targetProfiles = activeProfiles.filter(p => p.role === 'member' && (p.domain || '').toLowerCase() === assignedTo.toLowerCase());
+      } else {
+        // Individual(s) - comma-separated names
+        const names = assignedTo.split(',').map((n: string) => n.trim().toLowerCase());
+        targetProfiles = activeProfiles.filter(p => names.includes(p.name.toLowerCase()));
+      }
+
       const initialRecords = targetProfiles.map(p => ({
         id: `rec_${sessionId}_${p.id}`,
         session_id: sessionId,
         user_id: p.id,
         status: 'present' as const
       }));
-      
+
       // Auto-award 3 points per present record on session initialization
       targetProfiles.forEach(p => {
         updateUserPointsForAttendance(p.id, true, false);
       });
-      
+
       const updatedRecords = [...allAttendanceRecords, ...initialRecords];
       setAllAttendanceRecords(updatedRecords);
       dbInstance.saveAttendanceRecords(updatedRecords);
     }
-    
+
     // Switch to attendance tab and focus on this editor
     setActiveView('attendance');
     setMarkingTimetableId(sessionId);
     setMarkingDate(dateStr);
-    
+
     // Set marking records state for editor
     const recordsForSession = allAttendanceRecords.filter(r => r.session_id === (existingSession ? existingSession.id : sessionId));
     const mapped: Record<string, { status: 'present' | 'absent', excuse: string }> = {};
@@ -514,7 +574,7 @@ export default function App() {
       });
     }
     setMarkingRecords(mapped);
-    
+
     triggerToast(`Roster sheet loaded for "${slot.title}"!`, 'success');
   };
 
@@ -527,7 +587,7 @@ export default function App() {
   useEffect(() => {
     refreshApplicationData();
     const handleDbUpdate = () => refreshApplicationData();
-    
+
     // Automatically fetch latest data when user returns to the tab
     const handleFocus = () => {
       // Don't overwrite if the user has pending changes they just made
@@ -595,7 +655,7 @@ export default function App() {
     const updated = [newS, ...currentSugs];
     dbInstance.saveSuggestions(updated);
     setSuggestions(updated);
-    
+
     setNewSugTitle('');
     setNewSugContent('');
     triggerToast('Suggestion securely logged inside the college inbox!', 'success');
@@ -638,7 +698,7 @@ export default function App() {
   const handleSendAlumniMessage = () => {
     if (!currentUser) return;
     if (!newAlumniMsgText.trim() && !alumniAttachedImage && !alumniAttachedAudio) return;
-    
+
     const newMessage: AlumniMessage = {
       id: `msg_${Date.now()}`,
       sender_id: currentUser.id,
@@ -655,7 +715,7 @@ export default function App() {
     const updated = [...currentMsgs, newMessage];
     dbInstance.saveAlumniMessages(updated);
     setAlumniMessages(updated);
-    
+
     // Clear all inputs
     setNewAlumniMsgText('');
     setAlumniAttachedImage(null);
@@ -705,10 +765,10 @@ export default function App() {
     if (!currentUser) {
       if (activeView === 'dashboard') {
         return (
-          <DashboardView 
-            currentUser={null} 
-            onRequestToast={triggerToast} 
-            onRefreshTrigger={refreshApplicationData} 
+          <DashboardView
+            currentUser={null}
+            onRequestToast={triggerToast}
+            onRefreshTrigger={refreshApplicationData}
           />
         );
       }
@@ -718,33 +778,33 @@ export default function App() {
     switch (activeView) {
       case 'dashboard':
         return (
-          <DashboardView 
-            currentUser={currentUser} 
-            onRequestToast={triggerToast} 
-            onRefreshTrigger={refreshApplicationData} 
+          <DashboardView
+            currentUser={currentUser}
+            onRequestToast={triggerToast}
+            onRefreshTrigger={refreshApplicationData}
           />
         );
 
       case 'music-lab':
         return (
-          <MusicLabView 
-            currentUser={currentUser} 
+          <MusicLabView
+            currentUser={currentUser}
             onRequestToast={triggerToast}
           />
         );
 
       case 'rules':
         return (
-          <RulesView 
-            currentUser={currentUser} 
-            onRequestToast={triggerToast} 
+          <RulesView
+            currentUser={currentUser}
+            onRequestToast={triggerToast}
           />
         );
 
       case 'profile':
         return (
-          <ProfileView 
-            currentUser={currentUser} 
+          <ProfileView
+            currentUser={currentUser}
             onProfileUpdate={(updated) => {
               setCurrentUser(updated);
               localStorage.setItem('malhaar_session_profile', JSON.stringify(updated));
@@ -769,8 +829,8 @@ export default function App() {
         const isCabinet = currentUser.role === 'president' || currentUser.role === 'admin';
 
         const userLevel = currentPerf.total_points >= 200 ? 'Gold Star 🏆' :
-                          currentPerf.total_points >= 100 ? 'Silver Star 🏅' :
-                          'Bronze Member 🎖️';
+          currentPerf.total_points >= 100 ? 'Silver Star 🏅' :
+            'Bronze Member 🎖️';
 
         return (
           <div className="space-y-8 animate-fade-in pb-16 w-full max-w-4xl mx-auto px-4 sm:px-6 text-[#D98353]">
@@ -789,7 +849,7 @@ export default function App() {
 
             {/* ====== THE TOP 3 PODIUM SECTION ====== */}
             <div className="grid grid-cols-3 gap-3 sm:gap-6 items-end pt-8 pb-4 max-w-2xl mx-auto">
-              
+
               {/* 2nd Place: Left column */}
               {leaderboardUsers[1] ? (
                 <div className="flex flex-col items-center text-center animate-slide-up" style={{ animationDelay: '100ms' }}>
@@ -810,7 +870,7 @@ export default function App() {
                   </div>
                   <span className="font-bold text-xs sm:text-sm text-white line-clamp-1 max-w-[90px]">{leaderboardUsers[1].profile.name}</span>
                   <span className="text-[10px] font-mono text-[#D98353] font-bold">{leaderboardUsers[1].profile.role === 'president' ? 'NA' : leaderboardUsers[1].perf.total_points} pts</span>
-                  
+
                   {/* Podium vertical bar */}
                   <div className="w-full h-24 sm:h-28 bg-gradient-to-t from-black via-[#101010] to-[#202020] border border-[#C0C0C0]/30 rounded-t-2xl mt-3 flex flex-col items-center justify-center shadow-lg shadow-black/80">
                     <span className="text-[#C0C0C0]/90 font-serif font-black text-3xl sm:text-4xl drop-shadow-[0_0_8px_rgba(192,192,192,0.3)]">2</span>
@@ -826,7 +886,7 @@ export default function App() {
                 <div className="flex flex-col items-center text-center animate-slide-up" style={{ animationDelay: '0ms' }}>
                   {/* Floating Gold Crown */}
                   <span className="text-2xl animate-bounce mb-1">👑</span>
-                  
+
                   {/* User Avatar with rank badge */}
                   <div className="relative shrink-0 mb-2">
                     <div className="absolute -top-1.5 -right-1.5 bg-[#E6AF2E] text-black w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold border-2 border-[#E6AF2E] shadow-md">
@@ -844,7 +904,7 @@ export default function App() {
                   </div>
                   <span className="font-extrabold text-xs sm:text-base text-white line-clamp-1 max-w-[100px]">{leaderboardUsers[0].profile.name}</span>
                   <span className="text-xs font-mono text-[#D98353] font-extrabold drop-shadow-[0_0_4px_rgba(217,131,83,0.2)]">{leaderboardUsers[0].profile.role === 'president' ? 'NA' : leaderboardUsers[0].perf.total_points} pts</span>
-                  
+
                   {/* Podium vertical bar */}
                   <div className="w-full h-32 sm:h-36 bg-gradient-to-t from-black via-[#1A180F] to-[#2B230F] border border-[#E6AF2E]/40 rounded-t-2xl mt-3 flex flex-col items-center justify-center shadow-xl shadow-black/90">
                     <span className="text-[#E6AF2E] font-serif font-black text-4xl sm:text-5xl drop-shadow-[0_0_12px_rgba(230,175,46,0.5)]">1</span>
@@ -875,7 +935,7 @@ export default function App() {
                   </div>
                   <span className="font-bold text-xs sm:text-sm text-white line-clamp-1 max-w-[90px]">{leaderboardUsers[2].profile.name}</span>
                   <span className="text-[10px] font-mono text-[#D98353] font-bold">{leaderboardUsers[2].profile.role === 'president' ? 'NA' : leaderboardUsers[2].perf.total_points} pts</span>
-                  
+
                   {/* Podium vertical bar */}
                   <div className="w-full h-18 sm:h-22 bg-gradient-to-t from-black via-[#0F0A06] to-[#1A120B] border border-[#CD7F32]/30 rounded-t-2xl mt-3 flex flex-col items-center justify-center shadow-md shadow-black/80">
                     <span className="text-[#CD7F32]/90 font-serif font-black text-2xl sm:text-3xl drop-shadow-[0_0_6px_rgba(205,127,50,0.3)]">3</span>
@@ -894,7 +954,7 @@ export default function App() {
                 {/* Visual accents */}
                 <div className="absolute -right-8 -bottom-8 w-24 h-24 rounded-full bg-white/10 blur-xl pointer-events-none" />
                 <div className="absolute -left-8 -top-8 w-24 h-24 rounded-full bg-white/10 blur-xl pointer-events-none" />
-                
+
                 <div className="flex items-center gap-4 relative z-10">
                   <div className="w-12 h-12 rounded-full border-2 border-white/60 overflow-hidden bg-white/20 flex items-center justify-center shadow-inner">
                     {currentUser.profile_image_url ? (
@@ -903,7 +963,7 @@ export default function App() {
                       <span className="text-lg font-serif font-black">{currentUser.name.charAt(0).toUpperCase()}</span>
                     )}
                   </div>
-                  
+
                   <div>
                     <span className="text-[9px] uppercase tracking-wider font-mono font-bold bg-white/20 px-2 py-0.5 rounded-full">
                       Your Standing Card
@@ -927,27 +987,26 @@ export default function App() {
               <h2 className="text-md font-extrabold uppercase font-mono tracking-wider text-[#D98353] text-left">
                 📜 Full Performer Roll standings
               </h2>
-              
+
               <div className="bg-black/60 backdrop-blur-md border border-[#D98353]/15 rounded-3xl p-3 sm:p-5 space-y-2 shadow-2xl">
                 {leaderboardUsers.map((item, idx) => {
                   const isCurrentUser = item.profile.id === currentUser.id;
                   const rankNum = String(idx + 1).padStart(2, '0');
-                  
+
                   return (
                     <div
                       key={item.profile.id}
-                      className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-300 hover:scale-[1.01] backdrop-blur-sm ${
-                        isCurrentUser 
-                          ? 'bg-gradient-to-r from-[#D98353]/15 to-transparent border-[#D98353] shadow-[0_0_15px_rgba(217,131,83,0.2)]' 
+                      className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-300 hover:scale-[1.01] backdrop-blur-sm ${isCurrentUser
+                          ? 'bg-gradient-to-r from-[#D98353]/15 to-transparent border-[#D98353] shadow-[0_0_15px_rgba(217,131,83,0.2)]'
                           : 'bg-black/40 border-zinc-850 hover:border-[#D98353]/35'
-                      }`}
+                        }`}
                     >
                       {/* Left: Serial Number & Identity */}
                       <div className="flex items-center gap-4 text-left">
                         <span className="text-sm font-black font-mono text-[#D98353]/80 w-6">
                           {rankNum}
                         </span>
-                        
+
                         <div className="w-10 h-10 rounded-full border border-zinc-800 overflow-hidden bg-zinc-900 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(0,0,0,0.5)]">
                           {item.profile.profile_image_url ? (
                             <img src={item.profile.profile_image_url} alt={item.profile.name} className="w-full h-full object-cover" />
@@ -981,7 +1040,7 @@ export default function App() {
                           </span>
                           <span className="text-[9px] text-zinc-500 block font-mono">points</span>
                         </div>
-                        
+
                         {/* Crown icon indicator based on ranking tiers */}
                         <div className="text-lg">
                           {idx === 0 ? (
@@ -1039,7 +1098,7 @@ export default function App() {
                 </select>
               </div>
             </div>
- 
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {coreMembers
                 .filter(m => {
@@ -1066,7 +1125,7 @@ export default function App() {
                   };
                   const orderA = roleOrder[a.role_key || ''] || roleOrder[a.role?.toLowerCase() || ''] || 99;
                   const orderB = roleOrder[b.role_key || ''] || roleOrder[b.role?.toLowerCase() || ''] || 99;
-                  
+
                   if (orderA !== orderB) return orderA - orderB;
                   return a.name.localeCompare(b.name);
                 })
@@ -1105,6 +1164,14 @@ export default function App() {
         return (
           <div className="space-y-6 animate-fade-in pb-16 w-full max-w-4xl mx-auto px-4">
             <div className="border-b border-white/5 pb-4 text-left">
+              {navHistory.length > 0 && (
+                <button
+                  onClick={goBack}
+                  className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-stone-400 hover:text-[#D98353] uppercase tracking-wider mb-2 transition-colors cursor-pointer"
+                >
+                  ← Back
+                </button>
+              )}
               <h1 className="text-3xl font-serif text-[#ECE6E1]">Official <span className="text-[#D98353]">Bulletin Board</span></h1>
               <p className="text-xs text-[#AC9E94]">Read critical announcements and directives broadcasted by Society leadership.</p>
             </div>
@@ -1133,6 +1200,14 @@ export default function App() {
           <div className="space-y-6 animate-fade-in pb-16 w-full max-w-7xl mx-auto px-4 text-left">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
               <div>
+                {navHistory.length > 0 && (
+                  <button
+                    onClick={goBack}
+                    className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-stone-400 hover:text-[#D98353] uppercase tracking-wider mb-2 transition-colors cursor-pointer"
+                  >
+                    ← Back
+                  </button>
+                )}
                 <h1 className="text-3xl font-serif text-[#ECE6E1]">Rehearsal & Practice <span className="text-[#D98353]">Schedules</span></h1>
                 <p className="text-xs text-[#AC9E94]">
                   Browse dynamic training calendars, view daily slots, and manage rehearsal routines.
@@ -1162,7 +1237,7 @@ export default function App() {
                 date.setDate(date.getDate() + i);
                 const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
                 const dateStr = getLocalDateString(date);
-                
+
                 // Filter timetable entries for this day of the week
                 const dayEvents = timetable.filter(t => {
                   const typeMatches = timetableFilter === 'All' || t.event_type === timetableFilter;
@@ -1313,7 +1388,7 @@ export default function App() {
 
             {/* Attendance Roster Board Tabs */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              
+
               {/* LEFT COLUMN: Personal Performance & Metrics Dashboard (Visible to everyone) */}
               <div className="lg:col-span-1 space-y-6">
                 <div className="bg-gradient-to-b from-[#1E1411] to-[#0D0A09] border border-[#D98353]/30 rounded-3xl p-6 shadow-xl space-y-6">
@@ -1328,17 +1403,14 @@ export default function App() {
                       const slotId = s.description;
                       const slot = timetable.find(t => t.id === slotId);
                       if (!slot) return true;
-                      if (slot.assigned_to === 'All' || !slot.assigned_to) return true;
-                      const list = slot.assigned_to.toLowerCase().split(',').map(n => n.trim());
-                      return list.includes(currentUser.name.toLowerCase()) || 
-                             list.includes(currentUser.id.toLowerCase());
+                      return isUserInTargetAudience(currentUser, slot.assigned_to);
                     });
 
                     const myRecords = allAttendanceRecords.filter(r => r.user_id === currentUser.id && myScheduledSessions.some(s => s.id === r.session_id));
                     const attendedCount = myRecords.filter(r => r.status === 'present').length;
                     const totalScheduled = myScheduledSessions.length;
                     const rate = totalScheduled > 0 ? Math.round((attendedCount / totalScheduled) * 100) : 100;
-                    
+
                     let grade = 'A+';
                     if (rate < 60) grade = 'F';
                     else if (rate < 70) grade = 'D';
@@ -1366,12 +1438,11 @@ export default function App() {
                             <span>{attendedCount} / {totalScheduled} Rehearsals</span>
                           </div>
                           <div className="w-full h-2 bg-stone-900 rounded-full overflow-hidden border border-white/5">
-                            <div 
-                              className={`h-full rounded-full transition-all duration-1000 ${
-                                rate >= 85 ? 'bg-gradient-to-r from-emerald-500 to-green-400' :
-                                rate >= 75 ? 'bg-gradient-to-r from-amber-500 to-orange-400' :
-                                'bg-gradient-to-r from-rose-500 to-red-400'
-                              }`}
+                            <div
+                              className={`h-full rounded-full transition-all duration-1000 ${rate >= 85 ? 'bg-gradient-to-r from-emerald-500 to-green-400' :
+                                  rate >= 75 ? 'bg-gradient-to-r from-amber-500 to-orange-400' :
+                                    'bg-gradient-to-r from-rose-500 to-red-400'
+                                }`}
                               style={{ width: `${rate}%` }}
                             />
                           </div>
@@ -1407,9 +1478,8 @@ export default function App() {
                                       <p className="font-semibold text-stone-300 truncate">{s.title}</p>
                                       <p className="text-[9px] font-mono text-stone-400">{s.date}</p>
                                     </div>
-                                    <span className={`px-2 py-0.5 rounded-full text-[9px] uppercase font-bold font-mono ${
-                                      isPresent ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/40' : 'bg-rose-950/40 text-rose-400 border border-rose-900/40'
-                                    }`}>
+                                    <span className={`px-2 py-0.5 rounded-full text-[9px] uppercase font-bold font-mono ${isPresent ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/40' : 'bg-rose-950/40 text-rose-400 border border-rose-900/40'
+                                      }`}>
                                       {isPresent ? '✅ Present' : '❌ Absent'}
                                     </span>
                                   </div>
@@ -1426,7 +1496,7 @@ export default function App() {
 
               {/* RIGHT / MAIN COLUMN: Log, mark and review system-wide sessions (Admin/President role manages) */}
               <div className="lg:col-span-2 space-y-6">
-                
+
                 {/* Weekly Timetable-based Attendance Launcher */}
                 <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 shadow-xl space-y-5">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-white/5 pb-3 gap-3">
@@ -1449,11 +1519,10 @@ export default function App() {
                           key={day}
                           type="button"
                           onClick={() => setSelectedWeeklyDay(day)}
-                          className={`flex-1 min-w-[80px] py-2 text-center text-[10px] font-bold tracking-wider uppercase rounded-xl transition-all cursor-pointer font-mono flex flex-col items-center justify-center gap-0.5 ${
-                            isActive 
-                              ? 'bg-[#D98353] text-black shadow-md shadow-[#D98353]/15 font-black' 
+                          className={`flex-1 min-w-[80px] py-2 text-center text-[10px] font-bold tracking-wider uppercase rounded-xl transition-all cursor-pointer font-mono flex flex-col items-center justify-center gap-0.5 ${isActive
+                              ? 'bg-[#D98353] text-black shadow-md shadow-[#D98353]/15 font-black'
                               : 'bg-transparent text-stone-400 hover:text-white hover:bg-white/5'
-                          }`}
+                            }`}
                         >
                           <span>{day.substring(0, 3)}</span>
                           <span className={`text-[8px] font-medium ${isActive ? 'text-black/60' : 'text-stone-500'}`}>{daySlotsCount} slot{daySlotsCount !== 1 ? 's' : ''}</span>
@@ -1492,6 +1561,17 @@ export default function App() {
                               <p className="text-[10px] text-stone-400 line-clamp-1">{slot.description}</p>
                               {slot.assigned_to && (
                                 <p className="text-[9px] font-mono text-stone-500 mt-1">🎯 Target: {slot.assigned_to}</p>
+                              )}
+                              {slot.google_meet_url && (
+                                <a
+                                  href={slot.google_meet_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 bg-emerald-700/20 hover:bg-emerald-600/40 text-emerald-400 hover:text-emerald-300 border border-emerald-700/30 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wide transition-all"
+                                  onClick={e => e.stopPropagation()}
+                                >
+                                  📹 Join Google Meet
+                                </a>
                               )}
                             </div>
 
@@ -1544,25 +1624,43 @@ export default function App() {
                                           title: slot.title,
                                           description: slot.id
                                         };
-                                        
+
                                         // Save session
                                         const updatedSessions = [...allSessions, newSession];
                                         dbInstance.saveAttendanceSessions(updatedSessions);
                                         setAllSessions(updatedSessions);
 
-                                        // Filter target profiles
+                                        // Filter target profiles based on slot.assigned_to
                                         const isCoreMeeting = slot.title.toLowerCase().includes("core team") || slot.event_type === 'Core Meet';
-                                        
-                                        const targetProfiles = isCoreMeeting
-                                          ? activeProfiles.filter(p => p.role === 'core' || p.role === 'president' || p.role === 'admin')
-                                          : activeProfiles.filter(p => p.role === 'member');
+                                        const assignedTo = (slot.assigned_to || 'All').trim();
+                                        const wingNames = ['Classical', 'Western', 'Rapper', 'Instrumentalist', 'Production'];
 
-                                        const initialRecords = targetProfiles.map(p => ({
-                                          id: `rec_${sessionId}_${p.id}`,
-                                          session_id: sessionId,
-                                          user_id: p.id,
-                                          status: 'present' as const
-                                        }));
+                                        let targetProfiles: typeof activeProfiles;
+                                        if (isCoreMeeting || assignedTo === 'Core') {
+                                          targetProfiles = activeProfiles.filter(p => p.role === 'core' || p.role === 'president' || p.role === 'admin');
+                                        } else if (assignedTo === 'All' || assignedTo === '') {
+                                          targetProfiles = activeProfiles.filter(p => p.role === 'member');
+                                        } else if (assignedTo === 'Alumni') {
+                                          targetProfiles = activeProfiles.filter(p => p.role === 'alumni');
+                                        } else if (wingNames.some(w => w.toLowerCase() === assignedTo.toLowerCase())) {
+                                          targetProfiles = activeProfiles.filter(p => p.role === 'member' && (p.domain || '').toLowerCase() === assignedTo.toLowerCase());
+                                        } else {
+                                          // Individual(s) - comma-separated names
+                                          const names = assignedTo.split(',').map((n: string) => n.trim().toLowerCase());
+                                          targetProfiles = activeProfiles.filter(p => names.includes(p.name.toLowerCase()));
+                                        }
+
+                                        // Deduplicate by removing already existing records for this session
+                                        const existingIds = new Set(allAttendanceRecords.filter(r => r.session_id === sessionId).map(r => r.user_id));
+                                        const newRecords = targetProfiles
+                                          .filter(p => !existingIds.has(p.id))
+                                          .map(p => ({
+                                            id: `rec_${sessionId}_${p.id}`,
+                                            session_id: sessionId,
+                                            user_id: p.id,
+                                            status: 'present' as const
+                                          }));
+                                        const initialRecords = newRecords;
 
                                         const updatedRecords = [...allAttendanceRecords, ...initialRecords];
                                         dbInstance.saveAttendanceRecords(updatedRecords);
@@ -1751,11 +1849,10 @@ export default function App() {
                                                   };
                                                 });
                                               }}
-                                              className={`px-2 py-1 rounded text-[9px] font-mono font-bold uppercase transition-all ${
-                                                stateVal.status === 'present'
+                                              className={`px-2 py-1 rounded text-[9px] font-mono font-bold uppercase transition-all ${stateVal.status === 'present'
                                                   ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/40'
                                                   : 'bg-rose-950/40 text-rose-400 border border-rose-900/40'
-                                              }`}
+                                                }`}
                                             >
                                               {stateVal.status === 'present' ? '✅ Present' : '❌ Absent'}
                                             </button>
@@ -1830,10 +1927,7 @@ export default function App() {
                         const slotId = s.description;
                         const slot = timetable.find(t => t.id === slotId);
                         if (!slot) return true;
-                        if (slot.assigned_to === 'All' || !slot.assigned_to) return true;
-                        const list = slot.assigned_to.toLowerCase().split(',').map(n => n.trim());
-                        return list.includes(p.name.toLowerCase()) || 
-                               list.includes(p.id.toLowerCase());
+                        return isUserInTargetAudience(p, slot.assigned_to);
                       });
                       const myRecords = allAttendanceRecords.filter(r => r.user_id === p.id && myScheduledSessions.some(s => s.id === r.session_id));
                       const attended = myRecords.filter(r => r.status === 'present').length;
@@ -1854,11 +1948,10 @@ export default function App() {
 
                           <div className="flex items-center gap-3 shrink-0 font-mono text-[10px]">
                             <span className="text-stone-400">{attended}/{total} Attended</span>
-                            <span className={`px-2 py-0.5 rounded-full font-bold ${
-                              rate >= 85 ? 'bg-emerald-950/40 text-emerald-400' :
-                              rate >= 75 ? 'bg-amber-950/40 text-amber-400' :
-                              'bg-rose-950/40 text-rose-400'
-                            }`}>{rate}%</span>
+                            <span className={`px-2 py-0.5 rounded-full font-bold ${rate >= 85 ? 'bg-emerald-950/40 text-emerald-400' :
+                                rate >= 75 ? 'bg-amber-950/40 text-amber-400' :
+                                  'bg-rose-950/40 text-rose-400'
+                              }`}>{rate}%</span>
                           </div>
                         </div>
                       );
@@ -1895,7 +1988,7 @@ export default function App() {
                   { name: 'December', num: '12' }
                 ].map((m) => {
                   const isSelected = selectedLedgerMonth === m.name;
-                  
+
                   // Filter sessions in this month
                   const monthSessions = allSessions.filter(s => {
                     const monthPart = s.date.split('-')[1]; // YYYY-MM-DD
@@ -1903,8 +1996,8 @@ export default function App() {
                   });
 
                   // User's attendance in this month
-                  const userRecordsInMonth = allAttendanceRecords.filter(r => 
-                    r.user_id === currentUser.id && 
+                  const userRecordsInMonth = allAttendanceRecords.filter(r =>
+                    r.user_id === currentUser.id &&
                     monthSessions.some(s => s.id === r.session_id)
                   );
                   const userAttendedCount = userRecordsInMonth.filter(r => r.status === 'present').length;
@@ -1915,11 +2008,10 @@ export default function App() {
                       key={m.name}
                       type="button"
                       onClick={() => setSelectedLedgerMonth(isSelected ? null : m.name)}
-                      className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-3 ${
-                        isSelected
+                      className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-3 ${isSelected
                           ? 'bg-[#D98353]/15 border-[#D98353] shadow-[0_0_15px_rgba(217,131,83,0.15)]'
                           : 'bg-black/30 border-white/5 hover:border-white/10 hover:bg-black/40'
-                      }`}
+                        }`}
                     >
                       <div className="flex justify-between items-start">
                         <span className="text-[10px] font-mono text-stone-500 font-bold">{m.num}</span>
@@ -1930,8 +2022,8 @@ export default function App() {
                       <div>
                         <h4 className={`text-xs font-bold font-serif ${isSelected ? 'text-[#D98353]' : 'text-stone-200'}`}>{m.name}</h4>
                         <p className="text-[9px] font-mono text-stone-400 mt-1">
-                          {totalSessionsInMonth > 0 
-                            ? `Attended: ${userAttendedCount}/${totalSessionsInMonth}` 
+                          {totalSessionsInMonth > 0
+                            ? `Attended: ${userAttendedCount}/${totalSessionsInMonth}`
                             : 'No sessions'}
                         </p>
                       </div>
@@ -2006,7 +2098,7 @@ export default function App() {
                               document.body.appendChild(link);
                               link.click();
                               document.body.removeChild(link);
-                              
+
                               triggerToast(`Exported CSV for ${selectedLedgerMonth} successfully!`, "success");
                             }}
                             className="px-3 py-1.5 bg-[#D98353] hover:bg-[#D98353]/80 text-black font-mono text-[10px] uppercase font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
@@ -2045,11 +2137,10 @@ export default function App() {
                                     <p className="font-semibold text-stone-200 truncate">{session.title}</p>
                                     <p className="text-[9px] font-mono text-stone-500">{session.date}</p>
                                   </div>
-                                  <span className={`px-2 py-0.5 rounded-full text-[9px] uppercase font-bold font-mono shrink-0 ${
-                                    isPresent 
-                                      ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/40' 
+                                  <span className={`px-2 py-0.5 rounded-full text-[9px] uppercase font-bold font-mono shrink-0 ${isPresent
+                                      ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/40'
                                       : 'bg-rose-950/40 text-rose-400 border border-rose-900/40'
-                                  }`}>
+                                    }`}>
                                     {isPresent ? '✅ Present' : '❌ Absent'}
                                   </span>
                                 </div>
@@ -2064,7 +2155,7 @@ export default function App() {
                             👥 Master Society Ledger (Date-by-Date Audit)
                           </h5>
                           <p className="text-[10px] text-stone-400">Select any rehearsal session date below to audit the full list of students who were Present or Absent.</p>
-                          
+
                           <div className="space-y-3">
                             {monthSessions.map(session => {
                               const records = allAttendanceRecords.filter(r => r.session_id === session.id);
@@ -2105,11 +2196,10 @@ export default function App() {
                                                   ({rec.excuse})
                                                 </span>
                                               )}
-                                              <span className={`text-[9px] font-bold font-mono px-1.5 py-0.5 rounded ${
-                                                isPresent 
-                                                  ? 'bg-emerald-950/40 text-emerald-400' 
+                                              <span className={`text-[9px] font-bold font-mono px-1.5 py-0.5 rounded ${isPresent
+                                                  ? 'bg-emerald-950/40 text-emerald-400'
                                                   : 'bg-rose-950/40 text-rose-400'
-                                              }`}>
+                                                }`}>
                                                 {isPresent ? 'Present' : 'Absent'}
                                               </span>
                                             </div>
@@ -2149,16 +2239,15 @@ export default function App() {
                       <span className="text-[10px] font-mono text-[#D98353] uppercase tracking-wider block mb-1">Assigned : {target.assigned_to}</span>
                       <h3 className="font-serif text-xl font-bold text-[#ECE6E1]">{target.title}</h3>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-[#AC9E94] font-mono">due {target.due_date}</span>
-                      <span className={`px-2.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${
-                        target.status === 'completed' 
-                          ? 'bg-emerald-950/20 text-[#55F2A6] border border-emerald-900/30' 
-                          : target.status === 'in-progress' 
-                            ? 'bg-amber-950/20 text-[#D98353] border border-[#D98353]/30' 
+                      <span className={`px-2.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${target.status === 'completed'
+                          ? 'bg-emerald-950/20 text-[#55F2A6] border border-emerald-900/30'
+                          : target.status === 'in-progress'
+                            ? 'bg-amber-950/20 text-[#D98353] border border-[#D98353]/30'
                             : 'bg-stone-800 text-stone-400'
-                      }`}>
+                        }`}>
                         {target.status}
                       </span>
                     </div>
@@ -2174,7 +2263,7 @@ export default function App() {
                       <span className="font-mono font-bold text-orange-400">{target.progress}%</span>
                     </div>
                     <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-gradient-to-r from-[#D98353] to-[#E6AF2E] transition-all duration-500"
                         style={{ width: `${target.progress}%` }}
                       />
@@ -2198,7 +2287,7 @@ export default function App() {
               {/* Submission Form */}
               <form onSubmit={handleAddSuggestion} className="lg:col-span-2 bg-white/[0.02] backdrop-blur-xl border border-white/10 p-6 rounded-2xl space-y-4 max-h-fit shadow-xl">
                 <h3 className="font-serif text-lg font-bold text-[#ECE6E1]">Draft Suggestion Proposal</h3>
-                
+
                 <div>
                   <label className="block text-xs text-[#AC9E94] mb-1 font-bold">Subject Title</label>
                   <input
@@ -2258,13 +2347,12 @@ export default function App() {
                             <h4 className="font-serif text-base text-[#ECE6E1] font-bold">{s.title}</h4>
                           </div>
 
-                          <span className={`px-2.5 py-0.5 rounded text-[9px] uppercase font-bold tracking-wider ${
-                            s.status === 'resolved' 
-                              ? 'bg-emerald-950/20 text-[#55F2A6] border border-emerald-900/30' 
-                              : s.status === 'reviewed' 
-                                ? 'bg-amber-950/20 text-[#D98353] border border-[#D98353]/30' 
+                          <span className={`px-2.5 py-0.5 rounded text-[9px] uppercase font-bold tracking-wider ${s.status === 'resolved'
+                              ? 'bg-emerald-950/20 text-[#55F2A6] border border-emerald-900/30'
+                              : s.status === 'reviewed'
+                                ? 'bg-amber-950/20 text-[#D98353] border border-[#D98353]/30'
                                 : 'bg-stone-800 text-stone-400'
-                          }`}>
+                            }`}>
                             {s.status}
                           </span>
                         </div>
@@ -2290,7 +2378,7 @@ export default function App() {
                               className="w-full p-3 bg-black/40 border border-white/10 text-xs text-white rounded-xl focus:border-[#D98353] focus:outline-none transition-all leading-relaxed"
                               rows={2}
                             />
-                            
+
                             <div className="flex justify-between items-center gap-2">
                               {/* Status choice */}
                               <select
@@ -2344,7 +2432,7 @@ export default function App() {
                 <span className="text-4xl text-[#D98353] block filter drop-shadow-[0_0_15px_rgba(217,131,83,0.3)]">🔒</span>
                 <h3 className="text-lg font-serif font-bold text-[#ECE6E1]">Presidential Clearance Required</h3>
                 <p className="text-xs text-[#AC9E94]">Provide the cryptographic cabinet password credentials to proceed.</p>
-                
+
                 <input
                   type="password"
                   value={controlPassword}
@@ -2368,7 +2456,7 @@ export default function App() {
                     <h3 className="font-serif text-lg font-bold text-[#ECE6E1]">Core Execution Board</h3>
                     <p className="text-xs text-[#AC9E94]">Active core performance calculations: (completed / assigned * 100).</p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setIsControlUnlocked(false)}
                     className="px-4 py-2 bg-white/5 border border-white/10 text-xs text-stone-300 rounded-xl hover:text-white hover:bg-white/10 transition-all cursor-pointer"
                   >
@@ -2378,12 +2466,12 @@ export default function App() {
 
                 <div className="grid grid-cols-1 gap-6">
                   {corePerformances.filter(cp => {
-                     const profData = dbInstance.getProfiles().find(p => p.id === cp.core_id);
-                     return profData && (profData.role === 'core' || profData.role === 'admin');
+                    const profData = dbInstance.getProfiles().find(p => p.id === cp.core_id);
+                    return profData && (profData.role === 'core' || profData.role === 'admin');
                   }).map(cp => {
-                     const profData = dbInstance.getProfiles().find(p => p.id === cp.core_id)!;
+                    const profData = dbInstance.getProfiles().find(p => p.id === cp.core_id)!;
 
-                     return (
+                    return (
                       <div key={cp.core_id} className="bg-white/[0.02] backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6 hover:border-[#D98353]/30 transition-all duration-300">
                         <div className="flex items-center gap-4 text-left w-full md:w-auto">
                           {profData.profile_image_url ? (
@@ -2408,26 +2496,26 @@ export default function App() {
                           </div>
 
                           <div className="flex gap-2">
-                            <button 
+                            <button
                               onClick={() => handleUpdateCorePerformance(cp.core_id, 1, 0)}
                               className="flex-1 h-8 bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-bold rounded-lg cursor-pointer transition-all uppercase tracking-wider text-stone-300"
                             >
                               Assign +1
                             </button>
-                            <button 
+                            <button
                               onClick={() => handleUpdateCorePerformance(cp.core_id, -1, 0)}
                               className="flex-1 h-8 bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-bold rounded-lg cursor-pointer transition-all uppercase tracking-wider text-stone-300"
                             >
                               Assign -1
                             </button>
-                            <button 
+                            <button
                               onClick={() => handleUpdateCorePerformance(cp.core_id, 0, -1)}
                               className="flex-1 h-8 bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-bold rounded-lg cursor-pointer transition-all uppercase tracking-wider text-stone-300 disabled:opacity-30 disabled:pointer-events-none"
                               disabled={cp.tasks_completed <= 0}
                             >
                               Complete -1
                             </button>
-                            <button 
+                            <button
                               onClick={() => handleUpdateCorePerformance(cp.core_id, 0, 1)}
                               className="flex-1 h-8 bg-gradient-to-r from-[#D98353] to-[#B35F30] text-black text-[10px] font-bold rounded-lg cursor-pointer transition-all uppercase tracking-wider disabled:opacity-30 disabled:pointer-events-none"
                               disabled={cp.tasks_completed >= cp.tasks_assigned}
@@ -2443,7 +2531,7 @@ export default function App() {
                           </div>
                         </div>
                       </div>
-                     );
+                    );
                   })}
                 </div>
               </div>
@@ -2453,8 +2541,8 @@ export default function App() {
 
       case 'admin':
         return (
-          <AdminView 
-            currentUser={currentUser} 
+          <AdminView
+            currentUser={currentUser}
             onRequestToast={triggerToast}
             onRefreshTrigger={refreshApplicationData}
             activeMonth={activeMonth}
@@ -2463,13 +2551,13 @@ export default function App() {
 
       case 'alumni-connect': {
         const isModerator = ['admin', 'president', 'central_core', 'core'].includes(currentUser.role);
-        
+
         // Simulates recording process
         const triggerRecordSimulation = () => {
           if (alumniIsRecording) return;
           setAlumniIsRecording(true);
           triggerToast('🎤 Recording vocal clip... speak now!', 'info');
-          
+
           setTimeout(() => {
             setAlumniIsRecording(false);
             // Simulate a beautiful classical vocal recording
@@ -2510,16 +2598,16 @@ export default function App() {
 
             {/* Main Dual-Panel Container (Enforces full screen, resolves scrolling issues) */}
             <div className="flex flex-col lg:flex-row bg-white border border-[#EBE3DE] rounded-[32px] overflow-hidden shadow-sm h-[calc(100vh-14rem)] min-h-[450px] lg:h-[75vh] mb-16 md:mb-0">
-              
+
               {/* LEFT CHANNEL RAIL (Requirement 3 style) */}
               <div className="hidden lg:flex lg:w-80 border-r border-[#EBE3DE] bg-[#FAF8F5] flex-col h-full shrink-0">
                 {/* Search / Filter */}
                 <div className="p-4 border-b border-[#EBE3DE]">
                   <h3 className="text-xs font-black uppercase font-mono text-stone-400 tracking-wider mb-2">Available lounges</h3>
                   <div className="relative">
-                    <input 
-                      type="text" 
-                      placeholder="Search topics..." 
+                    <input
+                      type="text"
+                      placeholder="Search topics..."
                       className="w-full bg-white border border-[#EBE3DE] rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-[#D98353] placeholder-stone-400"
                     />
                   </div>
@@ -2576,7 +2664,7 @@ export default function App() {
 
               {/* RIGHT MESSAGE PANEL */}
               <div className="flex-1 flex flex-col h-full bg-white relative min-w-0">
-                
+
                 {/* Channel Header */}
                 <div className="p-4 border-b border-[#EBE3DE] bg-[#FAF8F5] flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -2600,17 +2688,16 @@ export default function App() {
                   ) : (
                     alumniMessages.map((msg) => {
                       const isCurrentUserMsg = msg.sender_id === currentUser.id;
-                      const roleBadgeStyles = 
+                      const roleBadgeStyles =
                         msg.sender_role === 'admin' ? 'bg-amber-100 text-amber-800 border-amber-200' :
-                        msg.sender_role === 'president' ? 'bg-rose-100 text-rose-800 border-rose-200' :
-                        'bg-[#FAF3F0] text-[#D98353] border-[#EBE3DE]';
+                          msg.sender_role === 'president' ? 'bg-rose-100 text-rose-800 border-rose-200' :
+                            'bg-[#FAF3F0] text-[#D98353] border-[#EBE3DE]';
 
                       return (
-                        <div 
-                          key={msg.id} 
-                          className={`flex gap-3 max-w-[85%] items-start animate-fade-in ${
-                            isCurrentUserMsg ? 'ml-auto flex-row-reverse text-right' : 'mr-auto text-left'
-                          }`}
+                        <div
+                          key={msg.id}
+                          className={`flex gap-3 max-w-[85%] items-start animate-fade-in ${isCurrentUserMsg ? 'ml-auto flex-row-reverse text-right' : 'mr-auto text-left'
+                            }`}
                         >
                           {/* Sender Avatar */}
                           <div className="shrink-0">
@@ -2636,21 +2723,20 @@ export default function App() {
                             </div>
 
                             {/* Main Message Bubble */}
-                            <div className={`p-3 rounded-2xl border text-xs leading-relaxed space-y-2 ${
-                              isCurrentUserMsg 
-                                ? 'bg-[#D98353] border-[#D98353] text-white rounded-tr-none text-left shadow-sm' 
+                            <div className={`p-3 rounded-2xl border text-xs leading-relaxed space-y-2 ${isCurrentUserMsg
+                                ? 'bg-[#D98353] border-[#D98353] text-white rounded-tr-none text-left shadow-sm'
                                 : 'bg-[#FAF3F0] border-[#EBE3DE] text-stone-800 rounded-tl-none shadow-sm'
-                            }`}>
+                              }`}>
                               {/* Text content if present */}
                               {msg.text && <p className="whitespace-pre-wrap">{msg.text}</p>}
 
                               {/* Attached Image container (Requirement 3) */}
                               {msg.image_url && (
                                 <div className="rounded-xl overflow-hidden border border-black/10 bg-black/5 mt-1 max-w-xs shadow-inner">
-                                  <img 
-                                    src={msg.image_url} 
-                                    alt="Shared performance asset" 
-                                    className="w-full max-h-48 object-cover hover:scale-105 transition-transform duration-300" 
+                                  <img
+                                    src={msg.image_url}
+                                    alt="Shared performance asset"
+                                    className="w-full max-h-48 object-cover hover:scale-105 transition-transform duration-300"
                                   />
                                 </div>
                               )}
@@ -2687,7 +2773,7 @@ export default function App() {
                 {/* Pending Media Attachment Tray */}
                 {(alumniAttachedImage || alumniAttachedAudio || alumniIsRecording) && (
                   <div className="px-4 py-2 bg-[#FAF8F5] border-t border-[#EBE3DE] flex flex-wrap gap-3 items-center">
-                    
+
                     {/* Live recording indicator */}
                     {alumniIsRecording && (
                       <div className="flex items-center gap-2 bg-[#FAF3F0] border border-[#EBE3DE] px-3 py-1.5 rounded-full animate-pulse text-xs text-[#D98353] font-bold font-mono">
@@ -2701,7 +2787,7 @@ export default function App() {
                       <div className="relative flex items-center gap-2 bg-white border border-[#EBE3DE] pl-2 pr-3 py-1 rounded-full shadow-sm">
                         <img src={alumniAttachedImage} alt="Attachment thumbnail" className="w-6 h-6 rounded-full object-cover border border-[#EBE3DE]" />
                         <span className="text-[10px] font-mono font-bold text-stone-600">Performance Image.jpg</span>
-                        <button 
+                        <button
                           onClick={() => setAlumniAttachedImage(null)}
                           className="w-4 h-4 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 flex items-center justify-center text-[8px] font-bold cursor-pointer"
                         >
@@ -2715,7 +2801,7 @@ export default function App() {
                       <div className="relative flex items-center gap-2 bg-white border border-[#EBE3DE] pl-2.5 pr-3 py-1 rounded-full shadow-sm">
                         <span className="text-xs">🎙️</span>
                         <span className="text-[10px] font-mono font-bold text-stone-600">Recorded Vocal Note</span>
-                        <button 
+                        <button
                           onClick={() => setAlumniAttachedAudio(null)}
                           className="w-4 h-4 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 flex items-center justify-center text-[8px] font-bold cursor-pointer"
                         >
@@ -2729,15 +2815,15 @@ export default function App() {
 
                 {/* Message Input Panel (Requirement 3) */}
                 <div className="p-3 border-t border-[#EBE3DE] bg-[#FAF8F5] flex gap-2 items-end">
-                  
+
                   {/* Photo selector trigger */}
                   <label className="w-10 h-10 rounded-full border border-[#EBE3DE] bg-white flex items-center justify-center text-stone-500 hover:bg-[#FAF3F0] hover:text-[#D98353] cursor-pointer transition-all shrink-0 shadow-sm" title="Attach picture">
                     <span className="text-lg">📷</span>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={triggerImageUpload} 
-                      className="hidden" 
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={triggerImageUpload}
+                      className="hidden"
                     />
                   </label>
 
@@ -2774,18 +2860,18 @@ export default function App() {
 
       case 'workspace':
         return (
-          <WorkspaceHubView 
-            currentUser={currentUser} 
-            onRequestToast={triggerToast} 
+          <WorkspaceHubView
+            currentUser={currentUser}
+            onRequestToast={triggerToast}
           />
         );
 
       default:
         return (
-          <DashboardView 
-            currentUser={currentUser} 
-            onRequestToast={triggerToast} 
-            onRefreshTrigger={refreshApplicationData} 
+          <DashboardView
+            currentUser={currentUser}
+            onRequestToast={triggerToast}
+            onRefreshTrigger={refreshApplicationData}
           />
         );
     }
@@ -2825,15 +2911,15 @@ export default function App() {
   const coreNavItems = !currentUser
     ? rawNavItems.filter(item => item.id === 'dashboard')
     : rawNavItems.filter(item => {
-        if (currentUser.role === 'alumni') {
-          return ['dashboard', 'music-lab', 'profile', 'core-team', 'alumni-connect'].includes(item.id);
-        }
-        // For non-alumni, they see everything except Alumni Connect (unless they are admin or president)
-        if (item.id === 'alumni-connect') {
-          return ['admin', 'president', 'alumni'].includes(currentUser.role);
-        }
-        return true;
-      });
+      if (currentUser.role === 'alumni') {
+        return ['dashboard', 'music-lab', 'profile', 'core-team', 'alumni-connect'].includes(item.id);
+      }
+      // For non-alumni, they see everything except Alumni Connect (unless they are admin or president)
+      if (item.id === 'alumni-connect') {
+        return ['admin', 'president', 'alumni'].includes(currentUser.role);
+      }
+      return true;
+    });
 
   // Extra restricted spaces
   const extraNavItems = [
@@ -2842,16 +2928,16 @@ export default function App() {
   ];
 
   const visibleExtraItems = (!currentUser || currentUser.role === 'alumni')
-    ? [] 
+    ? []
     : extraNavItems.filter(item => item.roles.includes(currentUser.role));
 
   return (
     <div className={`min-h-screen relative flex items-center justify-center overflow-hidden transition-colors ${themeMode === 'light' ? 'bg-[#FAF6F3] text-[#2F211A]' : 'bg-[#050403] text-[#ECE6E1]'}`}>
-      
+
       {/* Settings Dialog Portal */}
-      <SettingsPopup 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)} 
+      <SettingsPopup
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
         onRequestToast={triggerToast}
         onRefreshTrigger={refreshApplicationData}
       />
@@ -2868,13 +2954,12 @@ export default function App() {
         {toasts.map(toast => (
           <div
             key={toast.id}
-            className={`pointer-events-auto p-4 rounded-xl border-t-2 shadow-2xl flex items-start gap-3 backdrop-blur-xl animate-slide-up bg-black/80 ${
-              toast.type === 'success' 
-                ? 'border-[#D98353] text-[#ECE6E1]' 
-                : toast.type === 'error' 
-                  ? 'border-red-600 text-red-200' 
+            className={`pointer-events-auto p-4 rounded-xl border-t-2 shadow-2xl flex items-start gap-3 backdrop-blur-xl animate-slide-up bg-black/80 ${toast.type === 'success'
+                ? 'border-[#D98353] text-[#ECE6E1]'
+                : toast.type === 'error'
+                  ? 'border-red-600 text-red-200'
                   : 'border-white/20 text-[#AC9E94]'
-            }`}
+              }`}
           >
             <span className="text-[#D98353] font-bold font-mono">
               {toast.type === 'success' ? '✓' : toast.type === 'error' ? '✕' : 'ℹ'}
@@ -2934,8 +3019,8 @@ export default function App() {
 
       {/* APP INTERNET CONTEXT SHELL CONTAINER */}
       <div className={`
-        ${isDesktopFrame 
-          ? 'w-full h-screen md:h-[844px] md:w-[390px] md:rounded-[50px] md:border-[12px] md:border-[#201816] md:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] md:relative md:overflow-hidden md:flex md:flex-col bg-[#0a0807]' 
+        ${isDesktopFrame
+          ? 'w-full h-screen md:h-[844px] md:w-[390px] md:rounded-[50px] md:border-[12px] md:border-[#201816] md:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] md:relative md:overflow-hidden md:flex md:flex-col bg-[#0a0807]'
           : 'w-full min-h-screen flex flex-col md:flex-row bg-[#0a0807]'
         } text-[#ECE6E1] transition-all relative z-10 shrink-0
       `}>
@@ -2973,13 +3058,12 @@ export default function App() {
           <div className="space-y-8">
             {/* Logo brand */}
             <div className="flex items-center gap-3">
-              <div 
+              <div
                 onClick={handleLogoClick}
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-black font-semibold shadow-[0_0_15px_rgba(217,131,83,0.15)] relative group overflow-hidden border-2 ${
-                  customLogo 
-                    ? 'border-white/10 bg-transparent' 
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-black font-semibold shadow-[0_0_15px_rgba(217,131,83,0.15)] relative group overflow-hidden border-2 ${customLogo
+                    ? 'border-white/10 bg-transparent'
                     : 'border-dashed border-[#D98353]/40 bg-[#D98353]/5'
-                } ${currentUser?.role === 'president' ? 'cursor-pointer hover:border-[#D98353]/80' : ''}`}
+                  } ${currentUser?.role === 'president' ? 'cursor-pointer hover:border-[#D98353]/80' : ''}`}
                 title={currentUser?.role === 'president' ? "President: Click to upload custom PNG/JPG logo" : undefined}
               >
                 {customLogo ? (
@@ -3006,7 +3090,7 @@ export default function App() {
 
             {/* Hidden Input for Custom Logo (President Only) */}
             {currentUser?.role === 'president' && (
-              <input 
+              <input
                 type="file"
                 ref={logoInputRef}
                 onChange={handleLogoChange}
@@ -3025,11 +3109,10 @@ export default function App() {
                     setActiveView(item.id);
                     if (item.id === 'core-control') setIsControlUnlocked(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-all pointer-events-auto cursor-pointer ${
-                    activeView === item.id 
-                      ? 'bg-gradient-to-r from-[#D98353] to-[#B35F30] text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_20px_rgba(217,131,83,0.4)]' 
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-all pointer-events-auto cursor-pointer ${activeView === item.id
+                      ? 'bg-gradient-to-r from-[#D98353] to-[#B35F30] text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_20px_rgba(217,131,83,0.4)]'
                       : 'text-[#AC9E94] hover:text-[#ECE6E1] hover:bg-white/5 hover:translate-x-1'
-                  }`}
+                    }`}
                 >
                   <span className="text-sm">{item.icon}</span>
                   <span>{item.label}</span>
@@ -3046,11 +3129,10 @@ export default function App() {
                         setActiveView(item.id);
                         if (item.id === 'core-control') setIsControlUnlocked(false);
                       }}
-                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-all pointer-events-auto cursor-pointer ${
-                        activeView === item.id 
-                          ? 'bg-gradient-to-r from-[#E6AF2E] to-[#B8860B] text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_20px_rgba(230,175,46,0.4)]' 
+                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-all pointer-events-auto cursor-pointer ${activeView === item.id
+                          ? 'bg-gradient-to-r from-[#E6AF2E] to-[#B8860B] text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_20px_rgba(230,175,46,0.4)]'
                           : 'text-[#AC9E94] hover:text-[#ECE6E1] hover:bg-white/5 hover:translate-x-1'
-                      }`}
+                        }`}
                     >
                       <span className="text-sm">{item.icon}</span>
                       <span>{item.label}</span>
@@ -3066,10 +3148,10 @@ export default function App() {
             <div className="pt-4 border-t border-white/5 flex items-center justify-between text-left">
               <div className="flex items-center gap-2.5">
                 {currentUser.profile_image_url ? (
-                  <img 
-                    src={currentUser.profile_image_url} 
-                    alt={currentUser.name} 
-                    className="w-9 h-9 rounded-full border border-white/10 object-cover shadow-inner" 
+                  <img
+                    src={currentUser.profile_image_url}
+                    alt={currentUser.name}
+                    className="w-9 h-9 rounded-full border border-white/10 object-cover shadow-inner"
                   />
                 ) : (
                   <div className="w-9 h-9 rounded-full border border-white/10 bg-[#2A160F] flex items-center justify-center text-xs font-serif font-bold text-[#D98353] shadow-inner shrink-0">
@@ -3081,7 +3163,7 @@ export default function App() {
                   <span className="text-[9px] text-[#D98353] uppercase font-bold font-mono block mt-0.5">{currentUser.role === 'admin' ? 'core' : currentUser.role}</span>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={handleSignOut}
                 className="text-stone-400 hover:text-white p-1 rounded cursor-pointer transition-colors"
                 title="Log Out Session"
@@ -3107,13 +3189,12 @@ export default function App() {
           items-center justify-between px-5 bg-[#191412] border-b border-[#2C1E19] sticky top-0 z-40 w-full shrink-0
         `}>
           <div className="flex items-center gap-2">
-            <div 
+            <div
               onClick={handleLogoClick}
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-black font-semibold shadow-[0_0_15px_rgba(217,131,83,0.15)] relative group overflow-hidden border-2 ${
-                customLogo 
-                  ? 'border-white/10 bg-transparent' 
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-black font-semibold shadow-[0_0_15px_rgba(217,131,83,0.15)] relative group overflow-hidden border-2 ${customLogo
+                  ? 'border-white/10 bg-transparent'
                   : 'border-dashed border-[#D98353]/40 bg-[#D98353]/5'
-              } ${currentUser?.role === 'president' ? 'cursor-pointer hover:border-[#D98353]/80' : ''}`}
+                } ${currentUser?.role === 'president' ? 'cursor-pointer hover:border-[#D98353]/80' : ''}`}
               title={currentUser?.role === 'president' ? "President: Click to upload custom PNG/JPG logo" : undefined}
             >
               {customLogo ? (
@@ -3137,7 +3218,7 @@ export default function App() {
 
           <div className="flex items-center gap-2.5">
             {currentUser?.role === 'president' && (
-              <button 
+              <button
                 onClick={() => setIsSettingsOpen(true)}
                 className="text-stone-300 hover:text-[#D98353] p-1.5 focus:outline-none transition-colors cursor-pointer text-sm"
                 title="Open Settings Desk"
@@ -3145,7 +3226,7 @@ export default function App() {
                 ⚙️
               </button>
             )}
-            <button 
+            <button
               onClick={() => setMobileMenuOpen(true)}
               className="text-stone-300 p-1.5 focus:outline-none"
             >
@@ -3158,7 +3239,7 @@ export default function App() {
         {mobileMenuOpen && (
           <div className="fixed inset-0 bg-black/80 z-50 flex justify-end md:hidden">
             <div className="w-64 h-full bg-[#191412] p-6 flex flex-col justify-between border-l border-stone-850 relative text-left">
-              <button 
+              <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="absolute top-4 right-4 text-[#D98353] text-sm font-mono"
               >
@@ -3201,11 +3282,10 @@ export default function App() {
                         setMobileMenuOpen(false);
                         if (item.id === 'core-control') setIsControlUnlocked(false);
                       }}
-                      className={`w-full flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-lg uppercase tracking-wider transition-all ${
-                        activeView === item.id 
-                          ? 'bg-[#D98353] text-[#120F0D]' 
+                      className={`w-full flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-lg uppercase tracking-wider transition-all ${activeView === item.id
+                          ? 'bg-[#D98353] text-[#120F0D]'
                           : 'text-[#AC9E94] hover:text-[#ECE6E1]'
-                      }`}
+                        }`}
                     >
                       <span>{item.icon}</span>
                       <span>{item.label}</span>
@@ -3220,11 +3300,10 @@ export default function App() {
                         setMobileMenuOpen(false);
                         if (item.id === 'core-control') setIsControlUnlocked(false);
                       }}
-                      className={`w-full flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-lg uppercase tracking-wider transition-all ${
-                        activeView === item.id 
-                          ? 'bg-[#E6AF2E] text-black' 
+                      className={`w-full flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-lg uppercase tracking-wider transition-all ${activeView === item.id
+                          ? 'bg-[#E6AF2E] text-black'
                           : 'text-[#AC9E94] hover:text-[#ECE6E1]'
-                      }`}
+                        }`}
                     >
                       <span>{item.icon}</span>
                       <span>{item.label}</span>
@@ -3248,7 +3327,7 @@ export default function App() {
 
         {/* ====== 3. MAIN WORKSPACE CONTENT CONTAINER ====== */}
         <main className={`flex-grow flex flex-col ${isDesktopFrame ? 'h-full max-h-full overflow-hidden' : 'min-h-screen'} max-w-full overflow-x-hidden relative`}>
-          
+
           {/* Global Page Header workspace bar (Only in responsive wide view) */}
           <header className={`
             ${isDesktopFrame ? 'hidden' : 'hidden md:flex'} 
@@ -3261,7 +3340,7 @@ export default function App() {
               </span>
             </div>
 
-             <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               {/* Real-time ticker clock */}
               <span className="text-xs font-mono text-[#D98353] uppercase tracking-widest bg-stone-950 px-2 py-1 rounded-xl border border-stone-900 select-none">
                 🕒 UTC: {currentTime || 'Loading...'}
@@ -3304,10 +3383,10 @@ export default function App() {
                   className="flex items-center gap-2 focus:outline-none hover:opacity-80 transition-opacity"
                 >
                   {currentUser.profile_image_url ? (
-                    <img 
-                      src={currentUser.profile_image_url} 
-                      alt="Me" 
-                      className="w-8 h-8 rounded-full border border-stone-800 object-cover shrink-0" 
+                    <img
+                      src={currentUser.profile_image_url}
+                      alt="Me"
+                      className="w-8 h-8 rounded-full border border-stone-800 object-cover shrink-0"
                     />
                   ) : (
                     <div className="w-8 h-8 rounded-full border border-stone-800 bg-[#2A160F] flex items-center justify-center text-xs font-serif font-bold text-[#D98353] shrink-0">
@@ -3338,7 +3417,7 @@ export default function App() {
           ${isDesktopFrame ? 'absolute' : 'fixed md:hidden'} 
           bottom-0 inset-x-0 h-16 bg-[#191412] border-t border-[#2C1E19] flex items-center justify-around z-40 px-2 shadow-xl shrink-0
         `}>
-          <button 
+          <button
             onClick={() => setActiveView('dashboard')}
             className={`flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${activeView === 'dashboard' ? 'text-[#D98353]' : 'text-stone-400'}`}
           >
@@ -3351,28 +3430,28 @@ export default function App() {
           </button>
           {currentUser ? (
             <>
-              <button 
+              <button
                 onClick={() => setActiveView('leaderboard')}
                 className={`flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${activeView === 'leaderboard' ? 'text-[#D98353]' : 'text-stone-400'}`}
               >
                 <Trophy size={18} />
                 <span>Leader</span>
               </button>
-              <button 
+              <button
                 onClick={() => setActiveView('timetable')}
                 className={`flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${activeView === 'timetable' ? 'text-[#D98353]' : 'text-stone-400'}`}
               >
                 <Calendar size={18} />
                 <span>Timetable</span>
               </button>
-              <button 
+              <button
                 onClick={() => setActiveView('music-lab')}
                 className={`flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${activeView === 'music-lab' ? 'text-[#D98353]' : 'text-stone-400'}`}
               >
                 <Mic2 size={18} />
                 <span>Svara Lab</span>
               </button>
-              <button 
+              <button
                 onClick={() => setActiveView('profile')}
                 className={`flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${activeView === 'profile' ? 'text-[#D98353]' : 'text-stone-400'}`}
               >
@@ -3381,7 +3460,7 @@ export default function App() {
               </button>
             </>
           ) : (
-            <button 
+            <button
               onClick={() => setIsAuthOpen(true)}
               className="flex flex-col items-center gap-1 text-[10px] uppercase font-bold tracking-wider text-[#D98353]"
             >
@@ -3402,12 +3481,12 @@ export default function App() {
               >
                 ✕
               </button>
-              <AuthView 
+              <AuthView
                 onAuthSuccess={(profile) => {
                   handleAuthSuccess(profile);
                   setIsAuthOpen(false);
-                }} 
-                onRequestToast={triggerToast} 
+                }}
+                onRequestToast={triggerToast}
               />
             </div>
           </div>
