@@ -18,7 +18,7 @@ import { compressImageBase64 } from '../db/imageCompressor';
 import { getWorkspaceToken } from '../lib/workspaceAuth';
 import { createCalendarEvent } from '../lib/workspaceApi';
 import {
-  Users, DollarSign, Palette, Clapperboard, ShoppingBag, Mic2, Sparkles, Pin, Megaphone, Calendar, Target, Settings, Check, X, FileText, Trash2, Plus, ArrowRight, Save
+  Users, DollarSign, Palette, Clapperboard, ShoppingBag, Mic2, Sparkles, Pin, Megaphone, Calendar, Target, Settings, Check, X, FileText, Trash2, Plus, ArrowRight, Save, Upload, Download, Database, AlertTriangle, FileUp, RefreshCw, FileCheck
 } from 'lucide-react';
 
 interface AdminViewProps {
@@ -45,7 +45,7 @@ export default function AdminView({currentUser, onRequestToast, onRefreshTrigger
     { id: 'settings_backup', label: 'Settings & Backup', icon: <Settings size={16} /> }
   ].filter(tab => {
     if (tab.id === 'settings_backup') {
-      return currentUser.role === 'president';
+      return currentUser.role === 'president' || currentUser.role === 'admin';
     }
     return true;
   });
@@ -262,6 +262,117 @@ export default function AdminView({currentUser, onRequestToast, onRefreshTrigger
     name: string;
     extraAction?: () => void;
   } | null>(null);
+
+  // JSON Backup Upload & Restore States
+  const [backupFile, setBackupFile] = useState<File | null>(null);
+  const [backupParsedData, setBackupParsedData] = useState<Record<string, any> | null>(null);
+  const [backupParsedSummary, setBackupParsedSummary] = useState<Record<string, number> | null>(null);
+  const [backupRestoreMode, setBackupRestoreMode] = useState<'replace' | 'merge'>('replace');
+  const [backupErrorMessage, setBackupErrorMessage] = useState<string | null>(null);
+  const [isRestoringBackup, setIsRestoringBackup] = useState(false);
+  const [isDraggingBackup, setIsDraggingBackup] = useState(false);
+  const [showRestoreConfirmModal, setShowRestoreConfirmModal] = useState(false);
+  const backupFileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleBackupFileSelect = (file: File) => {
+    setBackupErrorMessage(null);
+    if (!file.name.toLowerCase().endsWith('.json') && file.type !== 'application/json') {
+      setBackupErrorMessage('Please select a valid .json file.');
+      return;
+    }
+
+    setBackupFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string;
+        const parsed = JSON.parse(text);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+          setBackupErrorMessage('JSON file root must be an object with table keys (not an array).');
+          setBackupParsedData(null);
+          setBackupParsedSummary(null);
+          return;
+        }
+
+        const tableKeys = [
+          'profiles', 'performance', 'notices', 'events', 'achievements',
+          'merchandise', 'media_folders', 'core_members', 'core_performance',
+          'timetable', 'monthly_targets', 'suggestions', 'site_content',
+          'alumni', 'custom_sections', 'attendance_sessions', 'attendance_records',
+          'svara_practice_materials', 'knowledge_items', 'alumni_messages', 'active_month'
+        ];
+
+        const summary: Record<string, number> = {};
+        let foundAny = false;
+
+        tableKeys.forEach(k => {
+          const val = parsed[k] !== undefined ? parsed[k] : parsed[`malhaar_${k}`];
+          if (val !== undefined && val !== null) {
+            summary[k] = Array.isArray(val) ? val.length : 1;
+            foundAny = true;
+          }
+        });
+
+        if (!foundAny) {
+          setBackupErrorMessage('No Malhaar society database tables were recognized in this JSON file. Ensure you uploaded a valid backup export.');
+          setBackupParsedData(null);
+          setBackupParsedSummary(null);
+          return;
+        }
+
+        setBackupParsedData(parsed);
+        setBackupParsedSummary(summary);
+      } catch (err: any) {
+        setBackupErrorMessage(`Failed to parse JSON file: ${err?.message || 'Invalid syntax'}`);
+        setBackupParsedData(null);
+        setBackupParsedSummary(null);
+      }
+    };
+    reader.onerror = () => {
+      setBackupErrorMessage('Error reading the uploaded file from disk.');
+    };
+    reader.readAsText(file);
+  };
+
+  const handleExecuteRestore = async () => {
+    if (!backupParsedData) return;
+    setIsRestoringBackup(true);
+    try {
+      const res = dbInstance.restoreBackup(backupParsedData, backupRestoreMode);
+      if (res.success) {
+        await loadAllData();
+        onRefreshTrigger?.();
+        setShowRestoreConfirmModal(false);
+        setBackupFile(null);
+        setBackupParsedData(null);
+        setBackupParsedSummary(null);
+        if (backupFileInputRef.current) {
+          backupFileInputRef.current.value = '';
+        }
+        const totalTables = Object.keys(res.restoredCounts).length;
+        onRequestToast(`✅ Master JSON backup restored successfully! (${totalTables} tables loaded and synced)`, 'success');
+      } else {
+        onRequestToast(res.error || 'Failed to restore backup.', 'error');
+      }
+    } catch (err: any) {
+      onRequestToast(`Error restoring backup: ${err?.message || err}`, 'error');
+    } finally {
+      setIsRestoringBackup(false);
+    }
+  };
+
+  const handleExportFullBackup = () => {
+    const backup = dbInstance.getFullBackup();
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", dataStr);
+    const dateStr = new Date().toISOString().split('T')[0];
+    dlAnchor.setAttribute("download", `malhaar_society_master_backup_${dateStr}.json`);
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    onRequestToast("Master backup JSON downloaded! Save this file to protect your configurations.", "success");
+  };
 
   // Load all tables
   const loadAllData = async () => {
@@ -5491,37 +5602,11 @@ export default function AdminView({currentUser, onRequestToast, onRefreshTrigger
                   <div className="bg-[#120F0D] border border-white/5 p-4.5 rounded-xl space-y-3 text-left">
                     <span className="text-[#D98353] font-mono text-[10px] uppercase font-bold tracking-wider block">🧬 Complete Master JSON Backup</span>
                     <p className="text-[11px] text-[#AC9E94] leading-relaxed">
-                      Download the absolute binary database containing all tables: profiles, performances, events, recitals, and notices.
+                      Download the absolute database containing all 21 tables: profiles, performances, events, recitals, notices, and timetables.
                     </p>
                     <button
                       type="button"
-                      onClick={() => {
-                        const backup = {
-                          profiles: dbInstance.getProfiles(),
-                          performance: dbInstance.getPerformance(),
-                          notices: dbInstance.getNotices(),
-                          events: dbInstance.getEvents(),
-                          achievements: dbInstance.getAchievements(),
-                          merchandise: dbInstance.getMerchandise(),
-                          media_folders: dbInstance.getMediaFolders(),
-                          core_members: dbInstance.getCoreMembers(),
-                          core_performance: dbInstance.getCorePerformance(),
-                          timetable: dbInstance.getTimetable(),
-                          monthly_targets: dbInstance.getMonthlyTargets(),
-                          suggestions: dbInstance.getSuggestions(),
-                          site_content: dbInstance.getSiteContent(),
-                          alumni: dbInstance.getAlumni(),
-                          custom_sections: dbInstance.getCustomSections()
-                        };
-                        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
-                        const dlAnchor = document.createElement('a');
-                        dlAnchor.setAttribute("href", dataStr);
-                        dlAnchor.setAttribute("download", "malhaar_society_master_backup.json");
-                        document.body.appendChild(dlAnchor);
-                        dlAnchor.click();
-                        dlAnchor.remove();
-                        onRequestToast("Master backup JSON downloaded! Save this file to protect your configurations.", "success");
-                      }}
+                      onClick={handleExportFullBackup}
                       className="w-full h-11 border border-stone-800 bg-black/30 hover:bg-stone-900 text-stone-300 font-semibold text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
                     >
                       📥 Export Master Backup File
@@ -5532,6 +5617,235 @@ export default function AdminView({currentUser, onRequestToast, onRefreshTrigger
               </div>
             </div>
 
+          </div>
+
+          {/* ====== Complete JSON Backup Upload & Database Restore Section ====== */}
+          <div className="bg-black/40 border border-[#D98353]/30 p-6 sm:p-8 rounded-3xl space-y-6 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#D98353]/5 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-4">
+              <div>
+                <span className="text-[10px] font-mono uppercase font-bold tracking-widest text-[#D98353] block mb-1">
+                  Database Management & Cloud Restoration
+                </span>
+                <h3 className="text-xl font-serif font-bold text-white flex items-center gap-2">
+                  <Database size={22} className="text-[#D98353]" />
+                  Upload & Restore Master JSON Backup
+                </h3>
+                <p className="text-xs text-stone-400 mt-1 max-w-2xl leading-relaxed">
+                  Directly upload an exported JSON backup file (e.g., <code className="text-[#D98353] bg-black/50 px-1 py-0.5 rounded">malhaar_society_master_backup.json</code> or <code className="text-[#D98353] bg-black/50 px-1 py-0.5 rounded">db.json</code>) to safely restore or sync all member rosters, timetable sessions, notices, and society assets.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleExportFullBackup}
+                className="px-4 py-2 border border-white/10 hover:border-[#D98353]/40 bg-white/[0.02] hover:bg-white/[0.06] text-stone-300 hover:text-white rounded-xl text-xs font-mono font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer"
+                title="Download snapshot of current state before importing"
+              >
+                <Download size={14} className="text-[#D98353]" />
+                Download Current Snapshot
+              </button>
+            </div>
+
+            {/* File Dropzone / Picker */}
+            <input
+              type="file"
+              ref={backupFileInputRef}
+              accept=".json,application/json"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleBackupFileSelect(file);
+              }}
+              className="hidden"
+            />
+
+            {!backupFile ? (
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDraggingBackup(true);
+                }}
+                onDragLeave={() => setIsDraggingBackup(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDraggingBackup(false);
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) handleBackupFileSelect(file);
+                }}
+                onClick={() => backupFileInputRef.current?.click()}
+                className={`border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all cursor-pointer ${
+                  isDraggingBackup
+                    ? 'border-[#D98353] bg-[#D98353]/10 scale-[1.01]'
+                    : 'border-white/15 bg-white/[0.01] hover:border-[#D98353]/50 hover:bg-white/[0.02]'
+                }`}
+              >
+                <div className="w-16 h-16 rounded-full bg-[#D98353]/10 border border-[#D98353]/30 flex items-center justify-center mx-auto mb-4 text-[#D98353]">
+                  <Upload size={28} />
+                </div>
+                <h4 className="text-sm font-bold text-white mb-1">
+                  Click to select JSON backup file or drag & drop here
+                </h4>
+                <p className="text-xs text-stone-400 mb-3">
+                  Accepts <span className="text-stone-300 font-mono">.json</span> files exported from Malhaar or standard <span className="text-stone-300 font-mono">db.json</span> formats.
+                </p>
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/40 border border-white/5 rounded-full text-[10px] font-mono text-stone-400">
+                  <span>⚡ Auto-detects 21 database tables</span>
+                  <span>•</span>
+                  <span>Safe schema verification</span>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-[#120F0D] border border-white/10 rounded-2xl p-6 space-y-6">
+                {/* File Selected Meta Bar */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-black/40 border border-white/5 p-4 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-950/40 border border-emerald-900/40 flex items-center justify-center text-emerald-400 shrink-0">
+                      <FileCheck size={20} />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-sm text-white font-mono break-all">{backupFile.name}</h5>
+                      <p className="text-[10px] text-stone-400 font-mono">
+                        {(backupFile.size / 1024).toFixed(1)} KB • Uploaded for verification
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBackupFile(null);
+                      setBackupParsedData(null);
+                      setBackupParsedSummary(null);
+                      setBackupErrorMessage(null);
+                      if (backupFileInputRef.current) backupFileInputRef.current.value = '';
+                    }}
+                    className="text-xs text-stone-400 hover:text-rose-400 font-mono flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <X size={14} /> Remove & Choose Another File
+                  </button>
+                </div>
+
+                {/* Error Banner if validation failed */}
+                {backupErrorMessage && (
+                  <div className="bg-rose-950/30 border border-rose-900/40 p-4 rounded-xl flex items-start gap-3 text-rose-300 text-xs">
+                    <AlertTriangle size={18} className="shrink-0 mt-0.5 text-rose-400" />
+                    <div>
+                      <strong className="block font-bold mb-0.5">Invalid JSON Backup Archive:</strong>
+                      <p className="leading-relaxed">{backupErrorMessage}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Parsed Tables Preview */}
+                {backupParsedSummary && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-mono uppercase font-bold text-[#D98353] tracking-wider">
+                        📋 Archive Inspection Summary ({Object.keys(backupParsedSummary).length} Tables Detected)
+                      </span>
+                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-900/30 px-2 py-0.5 rounded">
+                        Verified Valid Malhaar Schema
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+                      {Object.entries(backupParsedSummary).map(([tbl, count]) => (
+                        <div key={tbl} className="bg-black/50 border border-white/5 p-2.5 rounded-xl text-left">
+                          <span className="text-[9px] font-mono text-stone-400 block truncate uppercase">
+                            {tbl.replace(/_/g, ' ')}
+                          </span>
+                          <span className="text-sm font-mono font-bold text-[#D98353]">
+                            {count} <span className="text-[9px] text-stone-500 font-normal">records</span>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Mode selection radio cards */}
+                    <div className="bg-black/30 border border-white/5 p-4 rounded-xl space-y-3">
+                      <span className="text-[10px] font-mono uppercase font-bold text-stone-300 block">
+                        Select Restoration Strategy:
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                        <label
+                          onClick={() => setBackupRestoreMode('replace')}
+                          className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                            backupRestoreMode === 'replace'
+                              ? 'bg-[#D98353]/10 border-[#D98353] shadow-[0_0_15px_rgba(217,131,83,0.15)]'
+                              : 'bg-black/40 border-white/5 hover:border-white/15'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="restore_mode"
+                            checked={backupRestoreMode === 'replace'}
+                            onChange={() => setBackupRestoreMode('replace')}
+                            className="mt-1 accent-[#D98353]"
+                          />
+                          <div>
+                            <span className="text-xs font-bold text-white block">Full Clean Restore (Replace)</span>
+                            <span className="text-[10px] text-stone-400 leading-relaxed block mt-0.5">
+                              Replaces active database tables entirely with the contents of this JSON backup. Recommended for migrating or full recovery.
+                            </span>
+                          </div>
+                        </label>
+
+                        <label
+                          onClick={() => setBackupRestoreMode('merge')}
+                          className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                            backupRestoreMode === 'merge'
+                              ? 'bg-[#D98353]/10 border-[#D98353] shadow-[0_0_15px_rgba(217,131,83,0.15)]'
+                              : 'bg-black/40 border-white/5 hover:border-white/15'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="restore_mode"
+                            checked={backupRestoreMode === 'merge'}
+                            onChange={() => setBackupRestoreMode('merge')}
+                            className="mt-1 accent-[#D98353]"
+                          />
+                          <div>
+                            <span className="text-xs font-bold text-white block">Safe Merge (Upsert by ID)</span>
+                            <span className="text-[10px] text-stone-400 leading-relaxed block mt-0.5">
+                              Updates existing records matching primary IDs and appends new ones. Preserves existing profiles and items not present in the backup.
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex flex-col sm:flex-row justify-end items-center gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBackupFile(null);
+                          setBackupParsedData(null);
+                          setBackupParsedSummary(null);
+                          if (backupFileInputRef.current) backupFileInputRef.current.value = '';
+                        }}
+                        className="w-full sm:w-auto px-5 h-11 bg-stone-900 hover:bg-stone-800 text-stone-300 font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={isRestoringBackup}
+                        onClick={() => setShowRestoreConfirmModal(true)}
+                        className="w-full sm:w-auto px-6 h-11 bg-gradient-to-r from-[#D98353] to-[#B35F30] hover:shadow-[0_0_20px_rgba(217,131,83,0.4)] text-black font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 font-mono disabled:opacity-50"
+                      >
+                        <FileUp size={16} />
+                        {isRestoringBackup ? 'Restoring Database...' : 'Restore Database from JSON'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Tech Stack & App Code Information Section */}
@@ -5609,6 +5923,58 @@ export default function AdminView({currentUser, onRequestToast, onRefreshTrigger
                 className="flex-1 h-10 bg-red-600 hover:bg-red-700 text-black font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-lg shadow-red-900/30 font-mono"
               >
                 Confirm Action
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====== JSON Backup Restore Confirmation Modal ====== */}
+      {showRestoreConfirmModal && backupParsedSummary && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[9999] animate-fadeIn text-left">
+          <div className="bg-[#1C0F0B] border-2 border-[#D98353]/40 p-6 sm:p-8 rounded-3xl max-w-lg w-full shadow-[0_0_60px_rgba(217,131,83,0.2)] text-center space-y-5">
+            <div className="w-16 h-16 bg-[#D98353]/15 text-[#D98353] rounded-full flex items-center justify-center mx-auto text-3xl border border-[#D98353]/30">
+              <Database size={30} />
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="font-serif text-xl font-bold text-white">
+                Confirm Database Restoration
+              </h4>
+              <p className="text-xs text-stone-300 leading-relaxed">
+                You are about to restore <strong className="text-[#D98353] font-mono">{backupFile?.name}</strong> using{' '}
+                <span className="font-mono text-white underline font-bold uppercase">{backupRestoreMode}</span> mode.
+              </p>
+              <div className="bg-black/50 p-3 rounded-xl border border-white/5 text-[11px] font-mono text-stone-300 text-left max-h-36 overflow-y-auto space-y-1">
+                {Object.entries(backupParsedSummary).map(([tbl, count]) => (
+                  <div key={tbl} className="flex justify-between">
+                    <span className="text-stone-400 capitalize">{tbl.replace(/_/g, ' ')}:</span>
+                    <span className="text-[#D98353] font-bold">{count} records</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-amber-400/90 font-mono italic">
+                ⚠️ All active admin views, timetables, and members will immediately sync to this state.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                disabled={isRestoringBackup}
+                onClick={() => setShowRestoreConfirmModal(false)}
+                className="flex-1 h-11 bg-stone-900 hover:bg-stone-800 text-stone-300 font-bold text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer font-mono border border-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isRestoringBackup}
+                onClick={handleExecuteRestore}
+                className="flex-1 h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-black font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-lg shadow-emerald-950 font-mono flex items-center justify-center gap-2"
+              >
+                {isRestoringBackup ? <RefreshCw size={14} className="animate-spin" /> : <Check size={16} />}
+                {isRestoringBackup ? 'Applying Restore...' : 'Confirm & Restore'}
               </button>
             </div>
           </div>
